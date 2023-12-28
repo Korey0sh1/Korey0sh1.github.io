@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/img/OS/index.jpg">
 <meta property="article:published_time" content="2023-11-20T07:19:03.000Z">
-<meta property="article:modified_time" content="2023-12-07T13:48:38.102Z">
+<meta property="article:modified_time" content="2023-12-28T07:13:58.479Z">
 <meta property="article:author" content="korey0sh1">
 <meta property="article:tag" content="OS">
 <meta property="article:tag" content="linux">
@@ -315,7 +315,7 @@
               <p class="note note-info">
                 
                   
-                    本文最后更新于：2023年12月7日 晚上
+                    本文最后更新于：2023年12月28日 下午
                   
                 
               </p>
@@ -659,6 +659,21 @@
 
 <p>在显存的文本显示模式中，两个字节显示一个字符——一字节为字符的值，一字节为字符的属性。所以获取光标的值*2才是对应字符在显存中的偏移。</p>
 <p>bochs的屏幕，可以容纳80*25共2000个字符，占据4000字节，所以换行就是简单粗暴的光标值+80，回车是当前光标值 - （当前光标值对80取模）。至于滚行的原理，就是简单粗暴的把1-24行移动到0-23行，突出一个不考虑缓存🤪</p>
+<h2 id="字符串输出"><a href="#字符串输出" class="headerlink" title="字符串输出"></a>字符串输出</h2><p>好吧其实就是对单个字符输出的封装呜呜</p>
+<p>print.h</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-meta">#<span class="hljs-keyword">ifndef</span> _LIB_KERNEL_PRINT_H</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> _LIB_KERNEL_PRINT_H</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;stdint.h&quot;</span></span><br><span class="hljs-type">void</span> <span class="hljs-title function_">put_char</span><span class="hljs-params">(<span class="hljs-type">uint8_t</span> char_csci)</span>;<br><span class="hljs-type">void</span> <span class="hljs-title function_">put_str</span><span class="hljs-params">(<span class="hljs-type">char</span> *msg)</span>;<br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br></code></pre></td></tr></table></figure>
+
+<p>print.S</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs assembly">global put_str<br><br>put_str:<br>	push ebx<br>	push ecx<br>	xor ecx, ecx<br>	mov ebx, [esp + 12]<br>	.go_on:<br>		mov cl, [ebx]<br>		cmp cl, 0<br>		jz .str_over<br>		push ecx<br>		call put_char<br>		add esp, 4<br>		inc ebx<br>		jmp .go_on<br><br>.str_over:<br>	pop ecx<br>	pop ebx<br>	ret<br></code></pre></td></tr></table></figure>
+
+<p>main.c</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;print.h&quot;</span></span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br>	put_str(<span class="hljs-string">&quot;begin\r\n&quot;</span>);<br>	put_str(<span class="hljs-string">&quot;aaaaaaaaaa&quot;</span>);<br>	put_str(<span class="hljs-string">&quot;\b\b\b\b\b\b\b\b&quot;</span>);<br>	put_str(<span class="hljs-string">&quot;bbbbbbbbbb\r\n&quot;</span>);<br>	put_str(<span class="hljs-string">&quot;end\r\n&quot;</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>ld.sh</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-meta">#!/bin/sh</span><br>nasm -f elf -o ./lib/kernel/print.o ./lib/kernel/print.S<br>gcc -m32 -I lib/kernel/ -c -o ./kernel/main.o ./kernel/main.c -masm=intel<br>ld -melf_i386 ./kernel/main.o ./lib/kernel/print.o -Ttext 0xc0001500 -e main -o ./kernel/kernel.bin <br></code></pre></td></tr></table></figure>
+
+<p>运行发现结果还是可以的</p>
+<p><img src="/img/OS/35.png" srcset="/img/loading.gif" lazyload></p>
 
                 
               </div>
