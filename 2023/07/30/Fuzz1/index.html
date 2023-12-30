@@ -1,0 +1,828 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/browser.jpg">
+  <link rel="icon" href="/img/browser.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="korey0sh1">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="最折磨的一件事">
+<meta property="og:type" content="article">
+<meta property="og:title" content="固件模拟指北">
+<meta property="og:url" content="http://example.com/2023/07/30/Fuzz1/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="最折磨的一件事">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/FW/index.jpg">
+<meta property="article:published_time" content="2023-07-30T13:58:48.000Z">
+<meta property="article:modified_time" content="2023-12-28T14:02:24.297Z">
+<meta property="article:author" content="korey0sh1">
+<meta property="article:tag" content="Iot">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/FW/index.jpg">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>固件模拟指北 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.6","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>korey0sh1</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/FW/banner.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="固件模拟指北"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        korey0sh1
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-30 21:58" pubdate>
+          2023年7月30日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">固件模拟指北</h1>
+            
+              <p class="note note-info">
+                
+                  
+                    本文最后更新于：2023年12月28日 晚上
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="0x0-写在所有之前"><a href="#0x0-写在所有之前" class="headerlink" title="0x0:写在所有之前"></a>0x0:写在所有之前</h1><p>固件模拟这个玩意笔者也不想多说什么，纯纯的折磨自己，但是还不得不搞（主要是实在是太穷没有米买设备）</p>
+<p>最近把主流的固件模拟方法都过了一遍，于是笔者就想水篇博客顺带记点笔记。</p>
+<p>鉴于固件模拟有各种薛定谔的报错，笔者使用的较为稳定的ubuntu20.04</p>
+<p>🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡</p>
+<h1 id="0x1-框架模拟"><a href="#0x1-框架模拟" class="headerlink" title="0x1:框架模拟"></a>0x1:框架模拟</h1><p>直接工具一把梭哈</p>
+<h2 id="FirmAE-Firmadyne"><a href="#FirmAE-Firmadyne" class="headerlink" title="FirmAE &amp; Firmadyne"></a>FirmAE &amp; Firmadyne</h2><p>这两个没什么好说的，能不能模拟起来纯靠运气</p>
+<p>笔者更倾向于FirmAE一点，主要是懒狗一条，能直接一行command完事的事情谁会想搓一个启动脚本呢</p>
+<p>关于这两个框架的具体信息可以直接在github找</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/pr0v3rbs/FirmAE">pr0v3rbs&#x2F;FirmAE: Towards Large-Scale Emulation of IoT Firmware for Dynamic Analysis (github.com)</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/firmadyne/firmadyne">firmadyne&#x2F;firmadyne: Platform for emulation and dynamic analysis of Linux-based firmware (github.com)</a></p>
+<h2 id="Fact-core"><a href="#Fact-core" class="headerlink" title="Fact_core"></a>Fact_core</h2><p>docker拉了两个小时没拉下来，捏麻麻滴，不做评价</p>
+<h1 id="0x2-Qemu模拟"><a href="#0x2-Qemu模拟" class="headerlink" title="0x2:Qemu模拟"></a>0x2:Qemu模拟</h1><p>有一说一虚拟化真的是个神奇的技术，笔者现在也对<strong>Virtualization</strong>逐渐起了兴趣</p>
+<p>言归正传，qemu模拟有两个不同的模式，user模式和system模式，在本篇博客中，两种模式都会详细介绍</p>
+<h2 id="qemu-user"><a href="#qemu-user" class="headerlink" title="qemu user"></a>qemu user</h2><h3 id="patch"><a href="#patch" class="headerlink" title="patch"></a>patch</h3><p>user模式下模拟较为便捷，这边就以典型的<strong>Tenda AC15</strong>来作为例子<a href="(https://www.tenda.com.cn/download/detail-2680.html)">固件下载</a></p>
+<p>先看一下架构（一般都是查看&#x2F;bin&#x2F;busybox），是arm，小端序，动态链接</p>
+<p>且在&#x2F;bin中存在httpd可执行文件，于是我们就可以尝试运行一下httpd</p>
+<p>首先因为httpd是异架构的动态链接，所以模拟的时候最好直接用静态编译的qemu</p>
+<p>先下载qemu-user-static</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">sudo apt<span class="hljs-operator">-</span><span class="hljs-keyword">get</span> install qemu<span class="hljs-operator">-</span><span class="hljs-keyword">user</span><span class="hljs-operator">-</span><span class="hljs-keyword">static</span><br></code></pre></td></tr></table></figure>
+
+<p>然后找到对应架构的qemu-user-static，复制到当前文件夹下</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs autoit">which qemu-arm-<span class="hljs-keyword">static</span><br>cp [path <span class="hljs-keyword">to</span> qemu-arm-<span class="hljs-keyword">static</span>] .``<br></code></pre></td></tr></table></figure>
+
+<p>将squashfs-root切换为根目录，user模式执行.&#x2F;bin&#x2F;httpd</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo <span class="hljs-built_in">chroot</span> . ./qemu-arm-static ./bin/httpd<br></code></pre></td></tr></table></figure>
+
+<p>执行了，但没完全执行，但至少我们可以确定这样是有可行性的（yes,we love linux!!!)</p>
+<p><img src="/img/FW/0.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>把httpd拖进ida，根据相应得字符串，看一下是哪边卡住了</p>
+<p>在那边下个断点，然后用IDA远程调式康康什么情况，GDB应该也行</p>
+<p><img src="/img/FW/1.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>单步步进，看到R0寄存器被赋值0，随后就只能跳转到0x2E514，所以使用keypatch来绕过这个这个检测</p>
+<p><img src="/img/FW/2.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="/img/FW/3.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>再执行看看会怎么样</p>
+<p>又寄了，那就再动调一下</p>
+<p><img src="/img/FW/4.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>可有看到这边又有一个和刚才类似得patch，那就故技重施</p>
+<p><img src="/img/FW/5.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="/img/FW/6.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>再次执行，成功了，但没完全成功，255.255.255.255是给人访问的？那只能继续调了</p>
+<p><img src="/img/FW/7.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>可以看到我们前面的两处patch都是为了执行<strong>ConnectCfm</strong>，接下来便是一些变量的获取</p>
+<p>在<strong>GetLanIfName</strong>之后，猜测**GetValue(“lan.ip”, s);**便是导致ip不正常的罪魁祸首</p>
+<p>那就查看一下外部调用<strong>GetLanIfName</strong></p>
+<p><strong>GetLanIfName</strong>被定义在<strong>lib&#x2F;libcommon.so</strong>中，外部调用了<strong>get_eth_name</strong></p>
+<p><img src="/img/FW/11.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>外部调用函数<strong>get_eth_name</strong>被定义<strong>lib&#x2F;libChipApi.so</strong>在中，具体function是获取网卡名称，但是本机中无法匹配与之相应的网卡</p>
+<p><img src="/img/FW/8.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>所以那就起一个名称为<strong>br0</strong>的网卡</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">sudo</span> brctl addbr br0<br><span class="hljs-attribute">sudo</span> ifconfig br0 <span class="hljs-number">192.168.10.144</span>/<span class="hljs-number">24</span><br></code></pre></td></tr></table></figure>
+
+<p>成功！！！</p>
+<p><img src="/img/FW/9.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>访问一下ip试试</p>
+<p>草，访问失败，香槟开早了</p>
+<p><img src="/img/FW/12.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>那就只能在启动的时候加上<strong>–strace</strong>参数看看具体执行过程了</p>
+<p>果然，在访问**&#x2F;webroot&#x2F;main.html**时发生了报错</p>
+<p><img src="/img/FW/13.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>仔细一看webroot这个文件夹是空的，而那些main.html文件全在文件夹webroot_ro中</p>
+<p><img src="/img/FW/14.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>那就只能把webroot给删了，然后创建一个软连接了</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">rm</span> -rf webroot<br>sudo <span class="hljs-built_in">ln</span> -s webroot_ro/ webroot<br></code></pre></td></tr></table></figure>
+
+<p>再访问一下，成功！！</p>
+<p><img src="/img/FW/15.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h3 id="hook"><a href="#hook" class="headerlink" title="hook"></a>hook</h3><p>这个手法太超前了，等铸币笔者学成归来再说</p>
+<h3 id=""><a href="#" class="headerlink" title=""></a></h3><h2 id="qemu-system"><a href="#qemu-system" class="headerlink" title="qemu system"></a>qemu system</h2><p>这时候就到了全系统模拟了</p>
+<p>winmt👴的文章中有很详细的流程[<a target="_blank" rel="noopener" href="https://bbs.kanxue.com/thread-272318.htm#msg_header_h2_4">原创] 从零开始复现 DIR-815 栈溢出漏洞-二进制漏洞-看雪-安全社区|安全招聘|kanxue.com</a></p>
+<p>王指导用的是ubuntu20，但我只有ubuntu16能成功起起来</p>
+<p>文章中那个镜像的链接好像有点小问题，笔者这边贴一个<a target="_blank" rel="noopener" href="https://files.sboc.dev/images/">images (sboc.dev)</a>，里面还有system模式启动脚本，真的我哭死</p>
+<p>这边还是用Tenda AC15的固件作为示范</p>
+<p>镜像起起来后，保证qemu里的ip能和外网ping通。</p>
+<p>本地开一个http服务或者用scp把squashfs-root传输进去</p>
+<p>使用命令挂载并切换根目录</p>
+<p><img src="/img/FW/16.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>接下来便是把patch好的httpd替换掉原本的</p>
+<p>设置网卡了br0，但默认的busybox中不存在brctl指令，github上随便找个编译好的arm架构的busybox传进去就行</p>
+<p>启动httpd</p>
+<p><img src="/img/FW/17.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Iot/" class="category-chain-item">Iot</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Iot/" class="print-no-link">#Iot</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>固件模拟指北</div>
+      <div>http://example.com/2023/07/30/Fuzz1/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>korey0sh1</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月30日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/09/28/%E5%8D%8E%E4%B8%BA%E6%9D%AF/" title="华为杯">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">华为杯</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/18/fuzz0/" title="dig into the afl">
+                        <span class="hidden-mobile">dig into the afl</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+    <!-- 备案信息 ICP for China -->
+    <div class="beian">
+  <span>
+    <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+      京ICP证123456号
+    </a>
+  </span>
+  
+    
+      <span>
+        <a
+          href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=12345678"
+          rel="nofollow noopener"
+          class="beian-police"
+          target="_blank"
+        >
+          
+            <span style="visibility: hidden; width: 0">|</span>
+            <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+          
+          <span>京公网安备12345678号</span>
+        </a>
+      </span>
+    
+  
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
