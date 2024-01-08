@@ -1,0 +1,800 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/browser.jpg">
+  <link rel="icon" href="/img/browser.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="korey0sh1">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="好像和预想的有点不一样🤔">
+<meta property="og:type" content="article">
+<meta property="og:title" content="令人疑惑的boofuzz">
+<meta property="og:url" content="http://example.com/2023/08/26/boofuzz/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="好像和预想的有点不一样🤔">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/Fuzz1/index.png">
+<meta property="article:published_time" content="2023-08-26T00:36:45.000Z">
+<meta property="article:modified_time" content="2024-01-06T00:41:56.483Z">
+<meta property="article:author" content="korey0sh1">
+<meta property="article:tag" content="fuzz、Iot">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/Fuzz1/index.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>令人疑惑的boofuzz - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.6","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>korey0sh1</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/Fuzz1/banner.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="令人疑惑的boofuzz"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        korey0sh1
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-08-26 08:36" pubdate>
+          2023年8月26日 早上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">令人疑惑的boofuzz</h1>
+            
+              <p class="note note-info">
+                
+                  
+                    本文最后更新于：2024年1月6日 早上
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="令人疑惑的boofuzz"><a href="#令人疑惑的boofuzz" class="headerlink" title="令人疑惑的boofuzz"></a>令人疑惑的boofuzz</h1><p>本文最后更新于：2023年8月22日 晚上</p>
+<h1 id="0x0-写在所有之前"><a href="#0x0-写在所有之前" class="headerlink" title="0x0: 写在所有之前"></a>0x0: 写在所有之前</h1><p>boofuzz这一基于生成的fuzz框架，笔者一直有所耳闻</p>
+<p>且在笔者学习Iot后，对于能fuzz网络协议的boofuzz，更是产生的极大的兴趣。所以，笔者抱着学习boofuzz后能在Iot漏洞挖掘中提高效率的目的于最近浅浅的接触了一下boofuzz。</p>
+<p>然后，没有然后了</p>
+<p>给笔者整破防了，直接原地道心破碎</p>
+<p>PS：笔者这篇文章主要是记一点无用的板子和吐槽，各位大师傅如果想看源码解析或者逻辑思路的可以点×了。</p>
+<h1 id="0x1-还算正经的板子"><a href="#0x1-还算正经的板子" class="headerlink" title="0x1: 还算正经的板子"></a>0x1: 还算正经的板子</h1><p>笔者这边fuzz的target是Tenda AX3</p>
+<p>首先要抓包抓一点原始数据</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/</span> <span class="hljs-meta">HTTP/1.1</span><br><br><span class="language-apache"><span class="hljs-attribute">Host</span>: <span class="hljs-number">192.168.0.1</span></span><br><span class="language-apache"></span><br><span class="language-apache"><span class="hljs-attribute">Upgrade</span>-Insecure-Requests: <span class="hljs-number">1</span></span><br><span class="language-apache"></span><br><span class="language-apache"><span class="hljs-attribute">User</span>-Agent: Mozilla/<span class="hljs-number">5</span>.<span class="hljs-number">0</span> (Windows NT <span class="hljs-number">10</span>.<span class="hljs-number">0</span>; Win64; x64) AppleWebKit/<span class="hljs-number">537</span>.<span class="hljs-number">36</span> (KHTML, like Gecko) Chrome/<span class="hljs-number">115</span>.<span class="hljs-number">0</span>.<span class="hljs-number">5790</span>.<span class="hljs-number">171</span> Safari/<span class="hljs-number">537</span>.<span class="hljs-number">36</span></span><br><span class="language-apache"></span><br><span class="language-apache"><span class="hljs-attribute">Sec</span>-Purpose: prefetch;prerender</span><br><span class="language-apache"></span><br><span class="language-apache"><span class="hljs-attribute">Purpose</span>: prefetch</span><br><span class="language-apache"></span><br><span class="language-apache"><span class="hljs-attribute">Accept</span>: text/html,application/xhtml+xml,application/xml;q=<span class="hljs-number">0</span>.<span class="hljs-number">9</span>,image/avif,image/webp,image/apng,*/*;q=<span class="hljs-number">0</span>.<span class="hljs-number">8</span>,application/signed-exchange;v=b3;q=<span class="hljs-number">0</span>.<span class="hljs-number">7</span></span><br><span class="language-apache"></span><br><span class="language-apache"><span class="hljs-attribute">Accept</span>-Encoding: gzip, deflate</span><br><span class="language-apache"></span><br><span class="language-apache"><span class="hljs-attribute">Accept</span>-Language: en-US,en;q=<span class="hljs-number">0</span>.<span class="hljs-number">9</span></span><br><span class="language-apache"></span><br><span class="language-apache"><span class="hljs-attribute">Connection</span>: close</span><br></code></pre></td></tr></table></figure>
+
+<p>其实根据这个就可以写原语了，但这个Request是login请求，没什么多大意义</p>
+<p>于是笔者找了个存在漏洞的函数接口，先fuzz试试效果</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-keyword">from</span> boofuzz import *<br><br><br>def main():<br>    host = <span class="hljs-string">&#x27;192.168.0.1&#x27;</span><br>   <span class="hljs-built_in"> port </span>= 80<br>    <br>    # 设置<span class="hljs-built_in"> logging </span>配置<br>    csv_log = open(<span class="hljs-string">&#x27;fuzz_results.csv&#x27;</span>, <span class="hljs-string">&#x27;w&#x27;</span>, <span class="hljs-attribute">encoding</span>=<span class="hljs-string">&#x27;utf-8&#x27;</span>) #python3要设置字符串，byte会报错<br>    my_logger = [FuzzLoggerCsv(<span class="hljs-attribute">file_handle</span>=csv_log)] #将日志写入csv文件<br><br>    session = Session(<br>        <span class="hljs-attribute">target</span>=Target(<br>            <span class="hljs-attribute">connection</span>=SocketConnection(host,port,proto=&#x27;tcp&#x27;),<br>        ),<br>        <span class="hljs-attribute">receive_data_after_fuzz</span>=<span class="hljs-literal">True</span>,#接受程序返回的数据<br>        <span class="hljs-attribute">ignore_connection_reset</span>=<span class="hljs-literal">True</span>,<br>        <span class="hljs-attribute">restart_sleep_time</span>=10,<br>        <span class="hljs-attribute">crash_threshold_element</span>=1,#会停止在第一次crash的地方<br>        <span class="hljs-attribute">fuzz_loggers</span>=my_logger,<br>    )<br>    <br>    s_initialize(<span class="hljs-string">&quot;Request&quot;</span>)<br>    #line1<br>    s_static(<span class="hljs-string">&quot;POST&quot;</span>,<span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Method&quot;</span>)<br>    s_static(<span class="hljs-string">&quot; &quot;</span>,<span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;space-1-1&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;/goform/SetNetControlList&quot;</span>) #漏洞存在接口<br>    s_static(<span class="hljs-string">&quot; &quot;</span>,<span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;space-1-2&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;HTTP/1.1&quot;</span>,<span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;HTTP_VERSION&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;\r\n&quot;</span>,<span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Request-Line-CRLF-1&quot;</span>)<br>    #line2<br>    s_static(<span class="hljs-string">&quot;Host:&quot;</span>)<br>    s_static(<span class="hljs-string">&quot; &quot;</span>,<span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;space-2-1&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;192.168.0.1&quot;</span>,<span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;IP_ADDRESS&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;\r\n&quot;</span>,<span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Request-Line-CRLF-2&quot;</span>)<br>    #line3<br>    s_static(<span class="hljs-string">&quot;Content-Length:&quot;</span>,<span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Content-Length&quot;</span>)<br>    s_static(<span class="hljs-string">&quot; &quot;</span>,<span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;space-3-1&quot;</span>)<br>    s_size(<span class="hljs-string">&#x27;data&#x27;</span>,<span class="hljs-attribute">output_format</span>=<span class="hljs-string">&#x27;ascii&#x27;</span>,fuzzable=False)<br>    s_static(<span class="hljs-string">&quot;\r\n&quot;</span>,<span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Request-Line-CRLF-3&quot;</span>)<br>    #line4<br>    s_static(<span class="hljs-string">&quot;Accept:&quot;</span>,<span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Accept&quot;</span>)<br>    s_static(<span class="hljs-string">&quot; &quot;</span>,<span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;space-4-1&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;*/*&quot;</span>,<span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Accept-value&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;\r\n&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Request-Line-CRLF-4&quot;</span>)<br>    #line5<br>    s_static(<span class="hljs-string">&quot;X-Requested-With:&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;X-Requested-With&quot;</span>)<br>    s_static(<span class="hljs-string">&quot; &quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;space-5-1&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;XMLHttpRequest&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;X-Requested-With-value&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;\r\n&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Request-Line-CRLF-5&quot;</span>)<br>    #line6<br>    s_static(<span class="hljs-string">&quot;User-Agent:&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;User-Agent&quot;</span>)<br>    s_static(<span class="hljs-string">&quot; &quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;space-6-1&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.5790.171 Safari/537.36&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;User-Agent-value&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;\r\n&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Request-Line-CRLF-6&quot;</span>)<br>    #line7<br>    s_static(<span class="hljs-string">&quot;Content-Type:&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Content-Type&quot;</span>)<br>    s_static(<span class="hljs-string">&quot; &quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;space-7-1&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;application/x-www-form-urlencoded; charset=UTF-8&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Content-Type-value&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;\r\n&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Request-Line-CRLF-7&quot;</span>)<br>    #line8<br>    s_static(<span class="hljs-string">&quot;Origin:&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Origin&quot;</span>)<br>    s_static(<span class="hljs-string">&quot; &quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;space-8-1&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;http://192.168.0.1&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Origin-value&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;\r\n&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Request-Line-CRLF-8&quot;</span>)<br>    #line9<br>    s_static(<span class="hljs-string">&quot;Referer:&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Referer&quot;</span>)<br>    s_static(<span class="hljs-string">&quot; &quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;space-9-1&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;http://192.168.0.1/wireless_ssid.html?random=0.7532778770368576&amp;&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Referer-value&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;\r\n&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Request-Line-CRLF-9&quot;</span>)<br>    #line10<br>    s_static(<span class="hljs-string">&quot;Accept-Encoding:&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Accept-Encoding&quot;</span>)<br>    s_static(<span class="hljs-string">&quot; &quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;space-10-1&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;gzip, deflate&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Accept-Encoding-value&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;\r\n&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Request-Line-CRLF-10&quot;</span>)<br>    #line11<br>    s_static(<span class="hljs-string">&quot;Accept-Language:&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Accept-Language&quot;</span>)<br>    s_static(<span class="hljs-string">&quot; &quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;space-11-1&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;en-US,en;q=0.9&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Accept-Language-value&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;\r\n&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Request-Line-CRLF-11&quot;</span>)<br>    #line12<br>    s_static(<span class="hljs-string">&quot;Connection:&quot;</span>)<br>    s_static(<span class="hljs-string">&quot; &quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;space-12-1&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;close&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Connection-value&quot;</span>)<br>    s_static(<span class="hljs-string">&quot;\r\n&quot;</span>, <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Request-Line-CRLF-12&quot;</span>)<br><br>    s_static(<span class="hljs-string">&quot;\r\n&quot;</span>)<br>    #important key!!<br>    with s_block(<span class="hljs-string">&#x27;data&#x27;</span>):<br>        # line14<br>        s_group(<span class="hljs-string">&quot;key1&quot;</span>,[<span class="hljs-string">&#x27;mac&#x27;</span>,<span class="hljs-string">&#x27;list&#x27;</span>,<span class="hljs-string">&#x27;ssid&#x27;</span>]) #危险参数，其中有一个参数能造成栈溢出<br>        s_static(<span class="hljs-string">&quot;=&quot;</span>)<br>        s_string(<span class="hljs-string">&quot;korey0sh1&quot;</span>, <span class="hljs-attribute">max_len</span>=0x1000,fuzzable=True)<br><br><br>    session.connect(s_get(<span class="hljs-string">&quot;Request&quot;</span>))<br>    session.fuzz()<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    main()<br></code></pre></td></tr></table></figure>
+
+<p>具体怎么写框架笔者就不赘述了</p>
+<p>在我指定漏洞位置（&#x2F;goform&#x2F;SetNetControlList）和危险参数的情况下，boofuzz效率确实还行，大概一分钟就跑出来了</p>
+<p>可以看到在第1524个case DoS了</p>
+<p><img src="/img/Fuzz1/0.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>那说明1523个case发生了什么</p>
+<p><img src="/img/Fuzz1/1.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>很好，list参数造成了crash</p>
+<p>笔者一开始还很兴奋，毕竟与AFL++的Qemu mode相比，boofuzz在fuzz Iot中无论是效率还是自由度高的不是一点半点，但是这是笔者定位好了漏洞所在位置的情况下。因为之前几个礼拜笔者对Tenda AX3小挖了一手，对历史漏洞自然是能很快的定位。但是，如果面对一个新设备，不同的功能函数接口有几十个，且不同功能对应的参数也不同，这时fuzz的效率就很令人质疑。</p>
+<p>于是笔者便设置了3组group，每组group中设置了5个参数，将上面利用过的漏洞放入其中，类似</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs lisp">s_group(<span class="hljs-string">&quot;url&quot;</span>,[&#x27;url1&#x27;,&#x27;url2&#x27;,&#x27;url3&#x27;,&#x27;url4&#x27;,&#x27;url5&#x27;])<br>s_group(<span class="hljs-string">&quot;key1&quot;</span>,[arg1&#x27;,&#x27;arg2&#x27;,&#x27;arg3&#x27;,&#x27;arg4&#x27;,&#x27;arg5&#x27;]) <br>s_static(<span class="hljs-string">&quot;=&quot;</span>)<br>s_string(<span class="hljs-string">&quot;korey0sh1&quot;</span>, max_len=0x1000,fuzzable=True)<br>s_static(<span class="hljs-string">&quot;&amp;&quot;</span>)<br>s_group(<span class="hljs-string">&quot;key2&quot;</span>,[&#x27;arg1&#x27;,&#x27;arg2&#x27;,&#x27;arg3&#x27;,&#x27;arg4&#x27;,&#x27;arg5&#x27;])<br>s_static(<span class="hljs-string">&quot;=&quot;</span>)<br>s_string(<span class="hljs-string">&quot;korey0sh1&quot;</span>, max_len=0x1000,fuzzable=True)<br></code></pre></td></tr></table></figure>
+
+<p>但不幸的是，跑了5、6个小时，快100万条case，还是没跑出来</p>
+<p>且就算跑出crash，也只是大致漏洞定位，具体的poc还是得人工仔细审。</p>
+<h1 id="0x2-一些怨气碎碎念"><a href="#0x2-一些怨气碎碎念" class="headerlink" title="0x2: 一些怨气碎碎念"></a>0x2: 一些怨气碎碎念</h1><h2 id="神奇的callback"><a href="#神奇的callback" class="headerlink" title="神奇的callback"></a>神奇的callback</h2><p>因为发现DoS后py程序并不能停止，还是会不停尝试连接，于是便抄了一个callback板子根据http的回显来判断服务是否停止</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs cmake">def check_response(<span class="hljs-keyword">target</span>, fuzz_data_logger, session, *args, **kwargs):<br>    <span class="hljs-comment"># callback</span><br>    fuzz_data_logger.log_info(<span class="hljs-string">&quot;Checking this response...&quot;</span>)<br>    fuzz_data_logger.log_info(<span class="hljs-string">&quot;We will receive 512 bytes data...&quot;</span>)<br>    try:<br>        response = <span class="hljs-keyword">target</span>.recv(<span class="hljs-number">512</span>)<br>    except:<br>        fuzz_data_logger.log_fail(<span class="hljs-string">&quot;Unable to connect to target. Closing...&quot;</span>)<br>        <span class="hljs-keyword">target</span>.close()              <span class="hljs-comment"># close this target (fuzzer&#x27;s thread)</span><br>        <span class="hljs-keyword">return</span><br>    <span class="hljs-comment"># if empty response</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> response:<br>        fuzz_data_logger.log_fail(<span class="hljs-string">&quot;Empty response, target may be hung. Closing...&quot;</span>)<br>        <span class="hljs-keyword">target</span>.close()<br>        <span class="hljs-keyword">return</span><br>    fuzz_data_logger.log_info(<span class="hljs-string">&quot;response check...\n&quot;</span> + response.decode())<br>    <span class="hljs-keyword">target</span>.close()<br>    <span class="hljs-keyword">return</span><br></code></pre></td></tr></table></figure>
+
+<p>结果发现我POST都没发送呢你先执行callback了，于是乎整个程序在case 1就直接down掉了</p>
+<p><img src="/img/Fuzz1/3.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>我是SB，我真nm是SB，😝——&gt;🤡</p>
+<p>原来我以为callback是放session.connect里的，结果要放到session里就好了，我真TM是个SB啊</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs routeros">session.connect(s_get(<span class="hljs-string">&quot;Request&quot;</span>),<span class="hljs-attribute">callback</span>=check_response)<br>                          |<br>                          |<br>                          |<br>                         \ /<br>session = Session(<br>        <span class="hljs-attribute">target</span>=Target(<br>            <span class="hljs-attribute">connection</span>=SocketConnection(host,port,proto=&#x27;tcp&#x27;),<br>        ),<br>        post_test_case_callbacks=[check_response],<br>        <span class="hljs-attribute">receive_data_after_fuzz</span>=<span class="hljs-literal">False</span>,  #这个一定要关掉，不然callback那个recv就会出问题<br>        <span class="hljs-attribute">ignore_connection_reset</span>=<span class="hljs-literal">True</span>,<br>        <span class="hljs-attribute">restart_sleep_time</span>=10,<br>        <span class="hljs-attribute">crash_threshold_element</span>=1,<br>    )<br></code></pre></td></tr></table></figure>
+
+<h2 id="神奇的monitor"><a href="#神奇的monitor" class="headerlink" title="神奇的monitor"></a>神奇的monitor</h2><p>boofuzz 只提供了三种 monitor：</p>
+<p>ProcessMonitor 大概是和 Procman 进行 rpc 通讯来监控；</p>
+<p>NetworkMonitor 具体用法不太清楚，看文档里说用了 wireshark，ubuntu没装wireshark，hai</p>
+<p>CallbackMonitor 是默认的 Monitor，提供回调函数的功能，就是前面哪个callback</p>
+<p>然后笔者试了process monitor，结果跑不起来一点，后来一想process monitor也不怎么重要，实在不行用gdbserver拿case一跑就行了</p>
+<h2 id="神奇的log"><a href="#神奇的log" class="headerlink" title="神奇的log"></a>神奇的log</h2><p>想把每个case都写进文件，到时候打exp拿payload会方便。结果问gpt全是错的，后来总算找到了一个把log写进.csv文件的方法</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs routeros">session = Session(<br>        <span class="hljs-attribute">target</span>=Target(<br>            <span class="hljs-attribute">connection</span>=SocketConnection(host,port,proto=&#x27;tcp&#x27;),<br>        ),<br>        post_test_case_callbacks=[check_response],<br>        <span class="hljs-attribute">receive_data_after_fuzz</span>=<span class="hljs-literal">False</span>,<br>        <span class="hljs-attribute">ignore_connection_reset</span>=<span class="hljs-literal">True</span>,<br>        <span class="hljs-attribute">restart_sleep_time</span>=10,<br>        <span class="hljs-attribute">crash_threshold_element</span>=1,<br>        <span class="hljs-attribute">fuzz_loggers</span>=my_logger<br>    )<br></code></pre></td></tr></table></figure>
+
+<h2 id="Tips"><a href="#Tips" class="headerlink" title="Tips"></a>Tips</h2><p>对于某些要先登录的设备，可以这么写</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs less"><span class="hljs-selector-tag">session</span><span class="hljs-selector-class">.connect</span>(<span class="hljs-built_in">s_get</span>(<span class="hljs-string">&#x27;login&#x27;</span>))     # 默认前置节点为<span class="hljs-selector-tag">root</span><br><span class="hljs-selector-tag">session</span><span class="hljs-selector-class">.connect</span>(<span class="hljs-built_in">s_get</span>(<span class="hljs-string">&#x27;login&#x27;</span>), <span class="hljs-built_in">s_get</span>(action1&#x27;), callback=add_auth_callback)<br><span class="hljs-selector-tag">session</span><span class="hljs-selector-class">.connect</span>(<span class="hljs-built_in">s_get</span>(<span class="hljs-string">&#x27;login&#x27;</span>),<span class="hljs-built_in">s_get</span>(<span class="hljs-string">&#x27;action2&#x27;</span>), callback=add_auth_callback)<br><span class="hljs-selector-tag">session</span><span class="hljs-selector-class">.connect</span>(<span class="hljs-built_in">s_get</span>(<span class="hljs-string">&#x27;login&#x27;</span>),<span class="hljs-built_in">s_get</span>(<span class="hljs-string">&#x27;action3&#x27;</span>), callback=add_auth_callback)<br></code></pre></td></tr></table></figure>
+
+<h1 id="0x3-最后的最后"><a href="#0x3-最后的最后" class="headerlink" title="0x3: 最后的最后"></a>0x3: 最后的最后</h1><p>有失望，或许吧，开始学Iot的时候一直想寻找一个能全自动化固件模拟，漏洞分析的工具，然而，想想就有点不太现实（但Shambles这东西感兴趣的师傅可以了解下，铸币笔者因为实在太穷不是很了解，但感觉很diao的样子，md快6位数一年的费用想想就恐怖）。</p>
+<p>现在我可能会倾向于用FirmAE、fat、fap这些模拟一遍然后再用qemu进行手动验证吧，当然有真机能实操那就太棒了。</p>
+<p>扯远了，前几天觉得AFL对这些闭源的固件用处不是很大，现在看来boofuzz的作用也有限，😂</p>
+<p>可能过几天会看看FirmAFL，好像手上还有一篇对应论文来着。</p>
+<p>翻出来了三个月前想入门Iot时和Iot界的传说的聊天记录</p>
+<p><img src="/img/Fuzz1/0.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Fuzz/" class="category-chain-item">Fuzz</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/fuzz%E3%80%81Iot/" class="print-no-link">#fuzz、Iot</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>令人疑惑的boofuzz</div>
+      <div>http://example.com/2023/08/26/boofuzz/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>korey0sh1</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年8月26日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/09/28/%E5%8D%8E%E4%B8%BA%E6%9D%AF/" title="华为杯">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">华为杯</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/08/06/ASAN/" title="Address Sanitizer(投毒？投毒！)">
+                        <span class="hidden-mobile">Address Sanitizer(投毒？投毒！)</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+    <!-- 备案信息 ICP for China -->
+    <div class="beian">
+  <span>
+    <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+      京ICP证123456号
+    </a>
+  </span>
+  
+    
+      <span>
+        <a
+          href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=12345678"
+          rel="nofollow noopener"
+          class="beian-police"
+          target="_blank"
+        >
+          
+            <span style="visibility: hidden; width: 0">|</span>
+            <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+          
+          <span>京公网安备12345678号</span>
+        </a>
+      </span>
+    
+  
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

