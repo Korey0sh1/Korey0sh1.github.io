@@ -1,0 +1,803 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/browser.jpg">
+  <link rel="icon" href="/img/browser.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="korey0sh1">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="0x00：写在所有之前笔者最近在备赛西葫芦🗡，一直被🐕💩Iot折磨，主要是去年Iot实在是被打的太惨，你山河师傅一直在push呜呜呜 悲：( xuan哥的文章也算学Iot的路上绕不过去的一部分了，在里面找到了22年THU IotCTF的附件和wp，刚好有空就remake一下 你以为是👴不想复现以前西湖的题吗，md海特特供的板子买的到个屁啊 0x01：环境 &amp; 硬件 &amp; 软件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="esp32">
+<meta property="og:url" content="http://example.com/2024/03/16/esp32/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="0x00：写在所有之前笔者最近在备赛西葫芦🗡，一直被🐕💩Iot折磨，主要是去年Iot实在是被打的太惨，你山河师傅一直在push呜呜呜 悲：( xuan哥的文章也算学Iot的路上绕不过去的一部分了，在里面找到了22年THU IotCTF的附件和wp，刚好有空就remake一下 你以为是👴不想复现以前西湖的题吗，md海特特供的板子买的到个屁啊 0x01：环境 &amp; 硬件 &amp; 软件">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/8fb02e2b8744d240aebd4dc0ae4db1e.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/46bbae212d3d46bc6aefc4f82f31728.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/5af0232aecdc9f9091cabba3ee4a470.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/76a798dd43cc78ca975b1436a688cbe.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/94f163597bc7852a65bf5f06b925aa8.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240316203051.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/99952378a1375de9cc4af0b6b94f88d.jpg">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240316203622.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240317104811.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240317105001.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240317181826.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240318105154.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240318105930.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240318110106.png">
+<meta property="article:published_time" content="2024-03-16T11:01:00.000Z">
+<meta property="article:modified_time" content="2024-03-20T10:06:45.419Z">
+<meta property="article:author" content="korey0sh1">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/8fb02e2b8744d240aebd4dc0ae4db1e.jpg">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>esp32 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.6","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>korey0sh1</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/achieve_page.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="esp32"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        korey0sh1
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-03-16 19:01" pubdate>
+          2024年3月16日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          775 字
+        
+      </span>
+    
+
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">esp32</h1>
+            
+              <p class="note note-info">
+                
+                  
+                    本文最后更新于：2024年3月20日 晚上
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="0x00：写在所有之前"><a href="#0x00：写在所有之前" class="headerlink" title="0x00：写在所有之前"></a>0x00：写在所有之前</h1><p>笔者最近在备赛西葫芦🗡，一直被🐕💩Iot折磨，主要是去年Iot实在是被打的太惨，你山河师傅一直在push呜呜呜</p>
+<p>悲：(</p>
+<p>xuan哥的文章也算学Iot的路上绕不过去的一部分了，在里面找到了22年THU IotCTF的附件和wp，刚好有空就remake一下</p>
+<p><del>你以为是👴不想复现以前西湖的题吗，md海特特供的板子买的到个屁啊</del></p>
+<h1 id="0x01：环境-硬件-软件"><a href="#0x01：环境-硬件-软件" class="headerlink" title="0x01：环境 &amp; 硬件 &amp; 软件"></a>0x01：环境 &amp; 硬件 &amp; 软件</h1><h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><p>xuan哥的github仓库里已经写了</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/xuanxuanblingbling/esp32ctf_thu">xuanxuanblingbling&#x2F;esp32ctf_thu (github.com)</a></p>
+<h2 id="硬件"><a href="#硬件" class="headerlink" title="硬件"></a>硬件</h2><p><strong>ESP-WROOM-32</strong></p>
+<img src="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/8fb02e2b8744d240aebd4dc0ae4db1e.jpg" srcset="/img/loading.gif" lazyload style="zoom: 50%;" />
+
+<p><strong>TTL转USB</strong>  <del>从实验室偷的</del></p>
+<img src="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/46bbae212d3d46bc6aefc4f82f31728.jpg" srcset="/img/loading.gif" lazyload style="zoom:50%;" />
+
+<p><strong>垃圾蓝牙适配器</strong></p>
+<img src="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/5af0232aecdc9f9091cabba3ee4a470.jpg" srcset="/img/loading.gif" lazyload style="zoom:50%;" />
+
+<p><strong>NRF52832 蓝牙 Sniffer</strong></p>
+<img src="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/76a798dd43cc78ca975b1436a688cbe.jpg" srcset="/img/loading.gif" lazyload style="zoom:50%;" />
+
+<p>还有若干杜邦线+一根type C线</p>
+<h2 id="软件"><a href="#软件" class="headerlink" title="软件"></a>软件</h2><p>烧录的时候记得摁住boot，不然烧不进去</p>
+<h1 id="0x02：challenge"><a href="#0x02：challenge" class="headerlink" title="0x02：challenge"></a>0x02：challenge</h1><p>这套题目一共有四个方向，分别是硬件、蓝牙、网络、mqtt，为了适合萌新做题，贴心的给了源码呜呜呜</p>
+<p>其中硬件、蓝牙、网络三哥方向的题目需要连接GND和23号引脚</p>
+<h2 id="硬件-1"><a href="#硬件-1" class="headerlink" title="硬件"></a>硬件</h2><p>共3题</p>
+<h3 id="task-1"><a href="#task-1" class="headerlink" title="task    1"></a>task    1</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span> GPIO_INPUT_IO_0     18</span><br>.....<br><br><span class="hljs-type">void</span> <span class="hljs-title function_">hardware_task1</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-type">int</span> hit = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">while</span>(<span class="hljs-number">1</span>) &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[+] hardware task I : hit %d\n&quot;</span>,hit);<br>        <span class="hljs-keyword">if</span>(gpio_get_level(GPIO_INPUT_IO_0))&#123;<br>            hit ++ ;<br>        &#125;<span class="hljs-keyword">else</span>&#123;<br>            hit = <span class="hljs-number">0</span>;<br>        &#125;<br>        <span class="hljs-keyword">if</span>(hit&gt;<span class="hljs-number">3</span>)&#123;<br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[+] hardware task I : %s\n&quot;</span>,hardware_flag_1);<br>            <span class="hljs-keyword">break</span>;<br>        &#125;<br>        vTaskDelay(<span class="hljs-number">1000</span> / portTICK_RATE_MS);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>抬高GPIO_INPUT_IO_0三次即可拿到flag，因为前面定义GPIO_INPUT_IO_0为18，所以把18端口和高电平的3.3V端口用杜邦线连一起就行了</p>
+<img src="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/94f163597bc7852a65bf5f06b925aa8.jpg" srcset="/img/loading.gif" lazyload style="zoom:50%;" />
+
+<p><img src="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240316203051.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="task-2"><a href="#task-2" class="headerlink" title="task  2"></a>task  2</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-meta">#<span class="hljs-keyword">define</span> GPIO_INPUT_IO_0     18</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> GPIO_INPUT_PIN_SEL  ((1ULL&lt;&lt;GPIO_INPUT_IO_0) )</span><br><span class="hljs-type">int</span> trigger = <span class="hljs-number">0</span>;<br><br><span class="hljs-type">static</span> <span class="hljs-type">void</span> IRAM_ATTR <span class="hljs-title function_">gpio_isr_handler</span><span class="hljs-params">(<span class="hljs-type">void</span>* arg)</span>&#123;<br>    trigger++;<br>&#125;<br><br><span class="hljs-type">void</span> <span class="hljs-title function_">hardware_gpio_setup</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-type">gpio_config_t</span> io_conf;<br>    io_conf.pin_bit_mask = GPIO_INPUT_PIN_SEL;<br>    io_conf.mode = GPIO_MODE_INPUT;<br>    io_conf.intr_type = GPIO_INTR_POSEDGE;<br>    io_conf.pull_up_en = <span class="hljs-number">0</span>;<br>    gpio_config(&amp;io_conf);<br>    gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT);<br>    gpio_isr_handler_add(GPIO_INPUT_IO_0, gpio_isr_handler, (<span class="hljs-type">void</span>*) GPIO_INPUT_IO_0);<br>&#125;<br><br><span class="hljs-type">void</span> <span class="hljs-title function_">hardware_task2</span><span class="hljs-params">()</span>&#123;<br>    trigger = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">while</span>(<span class="hljs-number">1</span>)&#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[+] hardware task II : trigger %d\n&quot;</span>,trigger);<br>        <span class="hljs-keyword">if</span>(trigger &gt; <span class="hljs-number">10000</span>)&#123;<br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[+] hardware task II : %s\n&quot;</span>,hardware_flag_2);<br>            <span class="hljs-keyword">break</span>;<br>        &#125;<br>        vTaskDelay(<span class="hljs-number">1000</span> / portTICK_RATE_MS);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>task  1还能勉强看懂，这个就只能求助万能的chat了</p>
+<p><strong>GPIO 配置结构体初始化</strong>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">gpio_config_t</span> io_conf;<br>io_conf.pin_bit_mask = GPIO_INPUT_PIN_SEL;<br>io_conf.mode = GPIO_MODE_INPUT;<br>io_conf.intr_type = GPIO_INTR_POSEDGE;<span class="hljs-comment">//上升沿——上升沿指的是数字电路中数字电平从低电平（数字0）到高电平（数字1）的一瞬间</span><br>io_conf.pull_up_en = <span class="hljs-number">0</span>;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>gpio_config_t</code> 是一个结构体，用于配置 GPIO 的相关参数。</li>
+<li><code>io_conf.pin_bit_mask</code> 使用了之前定义的 <code>GPIO_INPUT_PIN_SEL</code>，表示要配置的 GPIO 输入引脚。在这里，只配置了一个引脚。</li>
+<li><code>io_conf.mode</code> 设置为 <code>GPIO_MODE_INPUT</code>，表示配置为输入模式。</li>
+<li><code>io_conf.intr_type</code> 设置为 <code>GPIO_INTR_POSEDGE</code>，表示触发中断的方式为上升沿触发。</li>
+<li><code>io_conf.pull_up_en</code> 设置为0，表示不启用上拉电阻。</li>
+</ul>
+<p><strong>GPIO 配置</strong>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs C">gpio_config(&amp;io_conf);<br></code></pre></td></tr></table></figure>
+
+<p>通过调用 <code>gpio_config</code> 函数，将之前配置的 GPIO 参数应用到硬件上。</p>
+<p><strong>GPIO 中断服务安装</strong>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs C">gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT);<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>gpio_install_isr_service</code> 函数用于安装 GPIO 中断服务，以便在 GPIO 中断发生时，能够调用注册的中断处理函数。</li>
+<li><code>ESP_INTR_FLAG_DEFAULT</code> 是一个中断标志，表示默认的中断配置。</li>
+</ul>
+<p><strong>GPIO 中断处理函数添加</strong>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs C">gpio_isr_handler_add(GPIO_INPUT_IO_0, gpio_isr_handler, (<span class="hljs-type">void</span>*) GPIO_INPUT_IO_0);<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>gpio_isr_handler_add</code> 函数用于将 GPIO 中断处理函数与特定 GPIO 引脚关联起来。</li>
+<li><code>GPIO_INPUT_IO_0</code> 是定义的 GPIO 输入引脚号。</li>
+<li><code>gpio_isr_handler</code> 是一个中断处理函数，在该函数中将 <code>trigger</code> 计数器增加。</li>
+<li><code>(void*) GPIO_INPUT_IO_0</code> 是传递给中断处理函数的参数，用于标识中断是由哪个 GPIO 引脚触发的。</li>
+</ul>
+<p>综上所述，<code>hardware_gpio_setup</code> 函数用于配置一个 GPIO 输入引脚的中断功能，当该 GPIO 输入引脚触发上升沿时，将调用预先定义的中断处理函数 <code>gpio_isr_handler</code>，在该处理函数中触发 <code>trigger</code> 计数器的增加。</p>
+<p>那上升沿该如何触发呢</p>
+<p>TX引脚会不停的输出，所以连接TX和18引脚就好了</p>
+<img src="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/99952378a1375de9cc4af0b6b94f88d.jpg" srcset="/img/loading.gif" lazyload style="zoom:50%;" />
+
+
+
+<p><img src="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240316203622.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="task-3"><a href="#task-3" class="headerlink" title="task 3"></a>task 3</h3><h2 id="蓝牙"><a href="#蓝牙" class="headerlink" title="蓝牙"></a>蓝牙</h2><h3 id="task-1-1"><a href="#task-1-1" class="headerlink" title="task 1"></a>task 1</h3><p>随机生成了了一个蓝牙名称，在开头的日志里输出，要翻一下</p>
+<p>只要扫描到相同id的蓝牙就能输出flag</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">void</span> <span class="hljs-title function_">bt_app_gap_start_up</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span><br>&#123;<br><br>    get_random(target_name,<span class="hljs-number">8</span>);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[+] bluetooth task I : Please change your bluetooth device name to %s\n&quot;</span>,target_name);<br><br>    <span class="hljs-type">esp_bt_controller_config_t</span> bt_cfg = BT_CONTROLLER_INIT_CONFIG_DEFAULT();<br>    esp_bt_controller_init(&amp;bt_cfg);<br>    <br>    esp_bt_controller_enable(ESP_BT_MODE_BTDM);<br>    <br>    esp_bluedroid_init();<br>    esp_bluedroid_enable();<br><br>    esp_bt_dev_set_device_name(<span class="hljs-string">&quot;THUCTF&quot;</span>);<br>    esp_bt_gap_set_scan_mode(ESP_BT_CONNECTABLE, ESP_BT_GENERAL_DISCOVERABLE);<br>    esp_bt_gap_register_callback(bt_app_gap_cb);<br>    esp_bt_gap_start_discovery(ESP_BT_INQ_MODE_GENERAL_INQUIRY, <span class="hljs-number">0x10</span>, <span class="hljs-number">0</span>);<br>&#125;<br><br><span class="hljs-type">void</span> <span class="hljs-title function_">check_name</span><span class="hljs-params">(<span class="hljs-type">char</span> * a,<span class="hljs-type">char</span> * b)</span>&#123;<br>    <span class="hljs-keyword">if</span>(!<span class="hljs-built_in">strcmp</span>(a,b))&#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;bluetooth task I : %s\n&quot;</span>,bt_flag_1);<br>        esp_bt_gap_cancel_discovery();<br>        scan = <span class="hljs-number">0</span>;<br>        next_task();<br>    &#125;<br>&#125;<br><br>get_name_from_eir(p-&gt;val, device_name, &amp;device_name_len);<br>            check_name(target_name,(<span class="hljs-type">char</span> *)device_name);<br>            ESP_LOGI(GAP_TAG, <span class="hljs-string">&quot;[+] bluetooth task I : Found a target device, address %s, name %s&quot;</span>, bda_str, device_name);<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240317104811.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240317105001.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="task-2-1"><a href="#task-2-1" class="headerlink" title="task 2"></a>task 2</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">void</span> <span class="hljs-title function_">next_task</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> fmt[]= &#123;<span class="hljs-number">0x06</span>,<span class="hljs-number">0x09</span>,<span class="hljs-number">0x68</span>,<span class="hljs-number">0x65</span>,<span class="hljs-number">0x6C</span>,<span class="hljs-number">0x6C</span>,<span class="hljs-number">0x6F</span>,<br>                          <span class="hljs-keyword">sizeof</span>(bt_flag_2),<span class="hljs-number">0xFD</span>&#125;;<br><br>    <span class="hljs-type">char</span> client_name[<span class="hljs-number">10</span>]=&#123;&#125;;<br>    get_random(client_name,<span class="hljs-number">5</span>);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[+] bluetooth task II : BLE device name is %s\n&quot;</span>,client_name);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[+] bluetooth task II : Please find the second flag in the ADV package from this BLE device %s\n&quot;</span>,client_name);<br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> data[<span class="hljs-number">100</span>];<br>    <span class="hljs-built_in">memcpy</span>(data,fmt,<span class="hljs-keyword">sizeof</span>(fmt));<br>    <span class="hljs-built_in">memcpy</span>(data+<span class="hljs-number">2</span>,client_name,<span class="hljs-number">5</span>);<br>    <span class="hljs-built_in">memcpy</span>(data+<span class="hljs-keyword">sizeof</span>(fmt),bt_flag_2,<span class="hljs-keyword">sizeof</span>(bt_flag_2));<br><br>    esp_ble_gap_config_adv_data_raw(data,<span class="hljs-keyword">sizeof</span>(fmt)+<span class="hljs-keyword">sizeof</span>(bt_flag_2));	<span class="hljs-comment">//数组配置原始广告数据</span><br>    esp_ble_gap_start_advertising(&amp;ble_adv_params);						  <span class="hljs-comment">//开始广告。</span><br>    esp_ble_gatts_register_callback(gatts_event_handler);				   <span class="hljs-comment">//注册 GATT 事件处理程序回调函数</span><br>    esp_ble_gatts_app_register(PROFILE_A_APP_ID);						  <span class="hljs-comment">//注册 GATT 应用程序</span><br>    esp_ble_gatt_set_local_mtu(<span class="hljs-number">500</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240317181826.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h2><h3 id="task-1-2"><a href="#task-1-2" class="headerlink" title="task   1"></a>task   1</h3><p>开个热点改改名称密码就行</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-type">void</span> <span class="hljs-title function_">network_init</span><span class="hljs-params">()</span>&#123;<br>    <span class="hljs-type">char</span> ssid[<span class="hljs-number">0x10</span>] = &#123;<span class="hljs-number">0</span>&#125;;<br>    <span class="hljs-type">char</span> pass[<span class="hljs-number">0x10</span>] = &#123;<span class="hljs-number">0</span>&#125;;<br>    get_random(ssid,<span class="hljs-number">6</span>);<br>    get_random(pass,<span class="hljs-number">8</span>);<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[+] network task I: I will connect a wifi -&gt; ssid: %s , password %s \n&quot;</span>,ssid,pass);<br>    connect_wifi(ssid,pass);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240318105154.png" srcset="/img/loading.gif" lazyload></p>
+<p>连上热点之后，在监听3333端口，接收到“getflag”就会输出flag</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">void</span> <span class="hljs-title function_">network_tcp</span><span class="hljs-params">()</span><br>&#123;<br>    <br>    <span class="hljs-type">char</span> addr_str[<span class="hljs-number">128</span>];<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_in</span> <span class="hljs-title">dest_addr</span>;</span><br><br>    dest_addr.sin_addr.s_addr = htonl(INADDR_ANY);<br>    dest_addr.sin_family = AF_INET;<br>    dest_addr.sin_port = htons(<span class="hljs-number">3333</span>);<br><br>    <span class="hljs-type">int</span> listen_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);<br><br>    ESP_LOGI(TAG, <span class="hljs-string">&quot;Socket created&quot;</span>);<br><br>    bind(listen_sock, (<span class="hljs-keyword">struct</span> sockaddr *)&amp;dest_addr, <span class="hljs-keyword">sizeof</span>(dest_addr));<br>    ESP_LOGI(TAG, <span class="hljs-string">&quot;Socket bound, port %d&quot;</span>, <span class="hljs-number">3333</span>);<br><br>    listen(listen_sock, <span class="hljs-number">1</span>);<br>    <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>) &#123;<br><br>        ESP_LOGI(TAG, <span class="hljs-string">&quot;Socket listening&quot;</span>);<br>        <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_storage</span> <span class="hljs-title">source_addr</span>;</span><br>        <span class="hljs-type">socklen_t</span> addr_len = <span class="hljs-keyword">sizeof</span>(source_addr);<br>        <span class="hljs-type">int</span> sock = accept(listen_sock, (<span class="hljs-keyword">struct</span> sockaddr *)&amp;source_addr, &amp;addr_len);<br>        inet_ntoa_r(((<span class="hljs-keyword">struct</span> sockaddr_in *)&amp;source_addr)-&gt;sin_addr, addr_str, <span class="hljs-keyword">sizeof</span>(addr_str) - <span class="hljs-number">1</span>);<br>        ESP_LOGI(TAG, <span class="hljs-string">&quot;Socket accepted ip address: %s&quot;</span>, addr_str);<br>        <span class="hljs-type">char</span> buffer[<span class="hljs-number">100</span>];<br>        <span class="hljs-keyword">while</span>(recv(sock,buffer,<span class="hljs-number">0x10</span>,<span class="hljs-number">0</span>))&#123;<br>            <span class="hljs-keyword">if</span>(<span class="hljs-built_in">strstr</span>(buffer,<span class="hljs-string">&quot;getflag&quot;</span>))&#123;<br>                send(sock, network_flag_1, <span class="hljs-built_in">strlen</span>(network_flag_1), <span class="hljs-number">0</span>);<br>                <span class="hljs-keyword">break</span>;<br>            &#125;<span class="hljs-keyword">else</span>&#123;<br>                send(sock, <span class="hljs-string">&quot;error\n&quot;</span>, <span class="hljs-built_in">strlen</span>(<span class="hljs-string">&quot;error\n&quot;</span>), <span class="hljs-number">0</span>);<br>            &#125;<br>            vTaskDelay(<span class="hljs-number">1000</span> / portTICK_RATE_MS);<br>        &#125;<br>        open_next_tasks = <span class="hljs-number">1</span>;<br>        shutdown(sock, <span class="hljs-number">0</span>);<br>        close(sock);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240318105930.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240318110106.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="task-2-2"><a href="#task-2-2" class="headerlink" title="task 2"></a>task 2</h3>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>esp32</div>
+      <div>http://example.com/2024/03/16/esp32/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>korey0sh1</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年3月16日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+    <!-- 备案信息 ICP for China -->
+    <div class="beian">
+  <span>
+    <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+      京ICP证123456号
+    </a>
+  </span>
+  
+    
+      <span>
+        <a
+          href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=12345678"
+          rel="nofollow noopener"
+          class="beian-police"
+          target="_blank"
+        >
+          
+            <span style="visibility: hidden; width: 0">|</span>
+            <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+          
+          <span>京公网安备12345678号</span>
+        </a>
+      </span>
+    
+  
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
